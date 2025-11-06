@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { parse, isValid } from 'date-fns';
+import { parse, isValid, format } from 'date-fns';
 import type { ScholarshipLevel } from './types';
 
 const LEVEL_KEYWORDS: Record<string, ScholarshipLevel> = {
@@ -80,7 +80,11 @@ export function parseDeadline(value: string | null | undefined): { label: string
       parsedDate = auto;
     }
   }
-  return { label: trimmed, date: parsedDate };
+  if (parsedDate) {
+    const label = format(parsedDate, 'MMMM d, yyyy');
+    return { label, date: parsedDate };
+  }
+  return { label: capitalize(trimmed), date: null };
 }
 
 export function createScholarshipId(name: string, link: string): string {

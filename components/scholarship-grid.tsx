@@ -62,55 +62,57 @@ export function ScholarshipGrid({ scholarships }: ScholarshipGridProps) {
 
   const visibleScholarships = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return scholarships
-      .filter((scholarship) => {
-        if (!filters.showExpired && scholarship.isExpired) {
+    const filtered = scholarships.filter((scholarship) => {
+      if (!filters.showExpired && scholarship.isExpired) {
+        return false;
+      }
+      if (filters.levels.size > 0) {
+        const match = scholarship.levelTags.some((level) => filters.levels.has(level));
+        if (!match) return false;
+      }
+      if (filters.countries.size > 0) {
+        const match = scholarship.countries.some((country) => filters.countries.has(country));
+        if (!match) return false;
+      }
+      if (filters.coverage.size > 0) {
+        const match = scholarship.coverage.some((item) => filters.coverage.has(item));
+        if (!match) return false;
+      }
+      if (query) {
+        const text = `${scholarship.name} ${scholarship.countries.join(' ')} ${scholarship.levelTags.join(' ')} ${
+          scholarship.shortDescription ?? ''
+        }`;
+        if (!text.toLowerCase().includes(query)) {
           return false;
         }
-        if (filters.levels.size > 0) {
-          const match = scholarship.levelTags.some((level) => filters.levels.has(level));
-          if (!match) return false;
-        }
-        if (filters.countries.size > 0) {
-          const match = scholarship.countries.some((country) => filters.countries.has(country));
-          if (!match) return false;
-        }
-        if (filters.coverage.size > 0) {
-          const match = scholarship.coverage.some((item) => filters.coverage.has(item));
-          if (!match) return false;
-        }
-        if (query) {
-          const text = `${scholarship.name} ${scholarship.countries.join(' ')} ${scholarship.levelTags.join(' ')} ${
-            scholarship.shortDescription ?? ''
-          }`;
-          if (!text.toLowerCase().includes(query)) {
-            return false;
-          }
-        }
-        return true;
-      })
-      .sort((a, b) => {
-        if (sort === 'deadline-asc') {
-          return compareDates(a.deadlineDate, b.deadlineDate);
-        }
-        if (sort === 'deadline-desc') {
-          return compareDates(b.deadlineDate, a.deadlineDate);
-        }
-        if (sort === 'country-asc') {
-          const countryA = a.countries[0] ?? '';
-          const countryB = b.countries[0] ?? '';
-          return countryA.localeCompare(countryB);
-        }
-        return a.name.localeCompare(b.name);
-      });
+      }
+      return true;
+    });
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (sort === 'deadline-asc') {
+        return compareDates(a.deadlineDate, b.deadlineDate);
+      }
+      if (sort === 'deadline-desc') {
+        return compareDates(b.deadlineDate, a.deadlineDate);
+      }
+      if (sort === 'country-asc') {
+        const countryA = a.countries[0] ?? '';
+        const countryB = b.countries[0] ?? '';
+        return countryA.localeCompare(countryB);
+      }
+      return a.name.localeCompare(b.name);
+    });
+
+    return sorted;
   }, [scholarships, filters, search, sort]);
 
   return (
     <div className="space-y-10">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-2">
-          <h2 className="font-serif text-3xl text-luxe-ivory">Curated Opportunities</h2>
-          <p className="text-sm text-luxe-ash">
+          <h2 className="font-serif text-3xl text-luxe-ebony dark:text-luxe-ivory">Curated Opportunities</h2>
+          <p className="text-sm text-luxe-ash dark:text-luxe-ash/80">
             {visibleScholarships.length} scholarships tailored to your ambitions. Refine the gallery to uncover your perfect fit.
           </p>
         </div>
@@ -121,28 +123,37 @@ export function ScholarshipGrid({ scholarships }: ScholarshipGridProps) {
               placeholder="Search scholarships"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="w-full rounded-full border border-white/10 bg-white/10 px-5 py-3 text-sm text-luxe-ivory placeholder:text-luxe-ash focus:border-luxe-gold/50 focus:outline-none focus:ring-2 focus:ring-luxe-gold/40"
+              className="w-full rounded-full border border-black/10 bg-white/70 px-5 py-3 text-sm text-luxe-ebony placeholder:text-luxe-ash focus:border-luxe-gold/40 focus:outline-none focus:ring-2 focus:ring-luxe-gold/30 dark:border-white/10 dark:bg-white/10 dark:text-luxe-ivory"
             />
-            <ArrowDownCircleIcon className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-luxe-ash" />
+            <ArrowDownCircleIcon className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-luxe-ash dark:text-luxe-ash/70" />
           </div>
-          <div className="flex items-center gap-3">
-            <label className="text-xs uppercase tracking-[0.3em] text-luxe-ash">Sort</label>
-            <select
-              value={sort}
-              onChange={(event) => setSort(event.target.value as SortOption)}
-              className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-luxe-ivory focus:border-luxe-gold/40 focus:outline-none"
-            >
-              {Object.entries(SORT_LABELS).map(([key, label]) => (
-                <option key={key} value={key} className="bg-luxe-ebony text-luxe-ivory">
-                  {label}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-xs uppercase tracking-[0.3em] text-luxe-ash dark:text-luxe-ash/80">Sort</span>
+            <div className="flex flex-wrap gap-2">
+              {(Object.entries(SORT_LABELS) as [SortOption, string][]).map(([key, label]) => {
+                const active = sort === key;
+                return (
+                  <button
+                    type="button"
+                    key={key}
+                    onClick={() => setSort(key)}
+                    className={clsx(
+                      'rounded-full border px-4 py-2 text-[11px] uppercase tracking-[0.3em] transition',
+                      active
+                        ? 'border-luxe-gold/80 bg-gradient-to-r from-luxe-gold/30 to-luxe-gold/10 text-luxe-ebony shadow-sm dark:text-luxe-ivory'
+                        : 'border-black/10 bg-white/70 text-luxe-ash hover:border-luxe-gold/40 hover:text-luxe-gold dark:border-white/10 dark:bg-white/5'
+                    )}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
           <button
             type="button"
             onClick={() => setFilterOpen(true)}
-            className="flex items-center gap-3 rounded-full border border-luxe-gold/40 bg-luxe-gold/10 px-6 py-3 text-xs uppercase tracking-[0.3em] text-luxe-ivory transition hover:bg-luxe-gold/20"
+            className="flex items-center gap-3 rounded-full border border-luxe-gold/40 bg-gradient-to-r from-luxe-gold/20 to-transparent px-6 py-3 text-xs uppercase tracking-[0.3em] text-luxe-ebony transition hover:border-luxe-gold/70 hover:text-luxe-gold dark:text-luxe-ivory"
           >
             <AdjustmentsHorizontalIcon className="h-5 w-5" />
             Filters
@@ -151,20 +162,14 @@ export function ScholarshipGrid({ scholarships }: ScholarshipGridProps) {
       </div>
       {visibleScholarships.length > 0 ? (
         <div
-          className={clsx(
-            'grid gap-6',
-            'grid-cols-2',
-            'sm:grid-cols-2',
-            'lg:grid-cols-3',
-            'xl:grid-cols-4'
-          )}
+          className={clsx('grid gap-5', 'grid-cols-2', 'sm:grid-cols-2', 'md:grid-cols-3', 'xl:grid-cols-4')}
         >
           {visibleScholarships.map((scholarship) => (
             <ScholarshipCard key={scholarship.id} scholarship={scholarship} onSelect={setSelected} />
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-sm text-luxe-ash">
+        <div className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-black/10 bg-white/80 p-10 text-center text-sm text-luxe-ash dark:border-white/10 dark:bg-white/5">
           <p>No scholarships match your filters yet.</p>
           <button
             type="button"
@@ -176,7 +181,7 @@ export function ScholarshipGrid({ scholarships }: ScholarshipGridProps) {
                 showExpired: filters.showExpired
               })
             }
-            className="rounded-full border border-luxe-gold/40 bg-luxe-gold/10 px-6 py-2 text-xs uppercase tracking-[0.3em] text-luxe-ivory hover:bg-luxe-gold/20"
+            className="rounded-full border border-luxe-gold/40 bg-gradient-to-r from-luxe-gold/20 to-transparent px-6 py-2 text-xs uppercase tracking-[0.3em] text-luxe-ebony transition hover:border-luxe-gold/70 hover:text-luxe-gold dark:text-luxe-ivory"
           >
             Clear Level, Country & Coverage
           </button>

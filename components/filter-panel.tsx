@@ -36,8 +36,8 @@ function ToggleChip({
       onClick={onToggle}
       className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.3em] transition ${
         active
-          ? 'border-luxe-gold/80 bg-luxe-gold/20 text-luxe-ivory'
-          : 'border-white/10 bg-white/5 text-luxe-ash hover:border-luxe-gold/40'
+          ? 'border-luxe-gold/80 bg-gradient-to-r from-luxe-gold/30 to-luxe-gold/10 text-luxe-ebony shadow-sm dark:text-luxe-ivory'
+          : 'border-black/10 bg-white/70 text-luxe-ash hover:border-luxe-gold/40 hover:text-luxe-gold dark:border-white/10 dark:bg-white/5'
       }`}
     >
       {label}
@@ -91,13 +91,13 @@ export function FilterPanel({
               leaveFrom="translate-x-0"
               leaveTo="translate-x-full"
             >
-              <Dialog.Panel className="flex h-full w-full max-w-[min(520px,66vw)] sm:max-w-[40vw] md:max-w-[33vw] flex-col overflow-y-auto border-l border-white/10 bg-gradient-to-b from-luxe-charcoal/95 via-luxe-ebony/95 to-black/95 p-8 shadow-aurora">
+              <Dialog.Panel className="flex h-full w-full max-w-[min(520px,66vw)] sm:max-w-[40vw] md:max-w-[33vw] flex-col overflow-y-auto border-l border-black/10 bg-gradient-to-b from-white/95 via-white/90 to-white/80 p-8 shadow-aurora dark:border-white/10 dark:from-luxe-charcoal/95 dark:via-luxe-ebony/95 dark:to-black/95">
                 <div className="mb-8 flex items-center justify-between">
-                  <Dialog.Title className="font-serif text-2xl text-luxe-ivory">Refine Scholarships</Dialog.Title>
+                  <Dialog.Title className="font-serif text-2xl text-luxe-ebony dark:text-luxe-ivory">Refine Scholarships</Dialog.Title>
                   <button
                     type="button"
                     onClick={onClose}
-                    className="rounded-full border border-white/10 bg-white/5 p-2 text-luxe-ivory hover:border-luxe-gold/40"
+                    className="rounded-full border border-black/10 bg-white/70 p-2 text-luxe-ebony transition hover:border-luxe-gold/50 hover:text-luxe-gold dark:border-white/10 dark:bg-white/5 dark:text-luxe-ivory"
                     aria-label="Close filters"
                   >
                     <XMarkIcon className="h-6 w-6" />
@@ -105,7 +105,7 @@ export function FilterPanel({
                 </div>
                 <div className="space-y-10">
                   <section>
-                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash">Academic Level</h3>
+                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Academic Level</h3>
                     <div className="flex flex-wrap gap-2">
                       {levelOptions.map((level) => (
                         <ToggleChip
@@ -118,7 +118,7 @@ export function FilterPanel({
                     </div>
                   </section>
                   <section>
-                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash">Destination</h3>
+                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Destination</h3>
                     <div className="flex max-h-64 flex-wrap gap-2 overflow-y-auto pr-1">
                       {countryOptions.map((country) => (
                         <ToggleChip
@@ -131,7 +131,7 @@ export function FilterPanel({
                     </div>
                   </section>
                   <section>
-                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash">Coverage</h3>
+                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Coverage</h3>
                     <div className="flex flex-wrap gap-2">
                       {coverageOptions.map((item) => (
                         <ToggleChip
@@ -144,8 +144,8 @@ export function FilterPanel({
                     </div>
                   </section>
                   <section>
-                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash">Deadline</h3>
-                    <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.3em] text-luxe-ash">
+                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Deadline</h3>
+                    <label className="flex items-center justify-between gap-4 rounded-2xl border border-black/10 bg-white/70 px-4 py-3 text-xs uppercase tracking-[0.3em] text-luxe-ash dark:border-white/10 dark:bg-white/5 dark:text-luxe-ash/80">
                       <span>Include expired deadlines</span>
                       <input
                         type="checkbox"

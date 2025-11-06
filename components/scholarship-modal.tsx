@@ -113,26 +113,23 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
         <Dialog as="div" className="relative z-50" open={open} onClose={handleClose}>
           <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
           <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-end justify-center p-4 sm:items-center">
-              <Dialog.Panel className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-luxe-charcoal/95 via-luxe-ebony/95 to-black/90 shadow-aurora">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <Dialog.Panel className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-black/10 bg-white/95 shadow-aurora max-h-[calc(100vh-2rem)] sm:max-h-[90vh] dark:border-white/10 dark:bg-gradient-to-br dark:from-luxe-charcoal/95 dark:via-luxe-ebony/95 dark:to-black/90">
                 <motion.button
                   onClick={handleClose}
-                  className="absolute right-6 top-6 z-10 rounded-full border border-white/20 bg-black/60 p-4 text-luxe-ivory transition hover:border-luxe-gold/60 hover:bg-black/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-luxe-gold/60"
-                  initial={{ scale: 0.8, opacity: 0 }}
+                  className="absolute right-4 top-4 z-20 rounded-full border border-black/10 bg-white/80 p-4 text-luxe-ebony transition hover:border-luxe-gold/50 hover:text-luxe-gold dark:border-white/20 dark:bg-black/60 dark:text-luxe-ivory"
+                  initial={{ scale: 0.85, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.08 }}
                   aria-label="Close scholarship"
                 >
-                  <XMarkIcon className="h-8 w-8" />
+                  <XMarkIcon className="h-9 w-9" />
                 </motion.button>
-                <div className="grid max-h-[90vh] grid-cols-1 overflow-hidden sm:grid-cols-[1.1fr_1fr]">
-                  <div className="relative overflow-hidden border-b border-white/10 sm:border-b-0 sm:border-r">
+                <div className="flex max-h-full flex-col overflow-hidden sm:grid sm:grid-cols-[1.1fr_1fr]">
+                  <div className="relative max-h-[320px] sm:max-h-none sm:h-full overflow-hidden border-b border-black/10 bg-black/70 sm:border-b-0 sm:border-r dark:border-white/10 dark:bg-black/70">
                     {images.length > 0 ? (
                       <div className="relative h-full w-full">
-                        <div
-                          className="flex h-full w-full items-center justify-center bg-black/40"
-                          style={{ minHeight: '320px' }}
-                        >
+                        <div className="flex h-full w-full items-center justify-center bg-black/40">
                           <AnimatePresence mode="wait">
                             <motion.img
                               key={images[index]}
@@ -172,47 +169,42 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-col gap-6 overflow-y-auto px-6 py-8 sm:px-8">
+                  <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-8 sm:max-h-[90vh] sm:px-8">
                     <div className="space-y-4">
-                      <Dialog.Title className="font-serif text-3xl font-semibold leading-tight text-luxe-ivory">
+                      <Dialog.Title className="font-serif text-3xl font-semibold leading-tight text-luxe-ebony dark:text-luxe-ivory">
                         {detail.name}
                       </Dialog.Title>
-                      <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.3em] text-luxe-ash">
-                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                      <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/80">
+                        <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
                           {detail.countries.length ? detail.countries.join(' • ') : 'Global'}
                         </span>
-                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                        <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
                           {detail.levelTags.join(' • ')}
                         </span>
                       </div>
-                    </div>
-                    <div className="flex flex-col gap-3 rounded-2xl border border-luxe-gold/30 bg-luxe-gold/10 p-5 text-sm text-luxe-ivory">
                       <a
                         href={detail.link}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center justify-between gap-3 text-sm font-semibold uppercase tracking-[0.3em]"
+                        className="inline-flex items-center gap-3 self-start rounded-full border border-luxe-gold/50 bg-gradient-to-r from-luxe-gold/25 to-transparent px-6 py-3 text-xs font-semibold uppercase tracking-[0.4em] text-luxe-ebony transition hover:border-luxe-gold/80 hover:text-luxe-gold dark:text-luxe-ivory"
                       >
-                        <span>Open Scholarship Website</span>
-                        <LinkIcon className="h-5 w-5" />
+                        <LinkIcon className="h-4 w-4" />
+                        Visit Scholarship Website
                       </a>
-                      <p className="text-xs text-luxe-ivory/70">
-                        Access the official announcement for eligibility, timelines, and application materials.
-                      </p>
                     </div>
-                    <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs uppercase tracking-[0.3em] text-luxe-ash">
-                      <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-luxe-ivory">
+                    <div className="space-y-2 rounded-2xl border border-black/10 bg-white/80 p-4 text-xs uppercase tracking-[0.35em] text-luxe-ash dark:border-white/10 dark:bg-white/5">
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-luxe-ebony dark:text-luxe-ivory">
                         <span>Deadline</span>
                         <span className="font-semibold text-luxe-gold">{detail.deadlineLabel}</span>
                       </div>
-                      <div className={`text-xs ${countdown.expired ? 'text-red-300' : 'text-luxe-gold'}`}>
+                      <div className={`text-xs font-semibold ${countdown.expired ? 'text-red-500' : 'text-luxe-gold'}`}>
                         {countdown.label}
                       </div>
                     </div>
-                    <div className="space-y-4 text-sm leading-relaxed text-luxe-ash">
-                      {detail.summary && <p className="text-base text-luxe-ivory/90">{detail.summary}</p>}
+                    <div className="space-y-4 text-sm leading-relaxed text-luxe-ash dark:text-luxe-ash/80">
+                      {detail.summary && <p className="text-base text-luxe-ebony/90 dark:text-luxe-ivory/90">{detail.summary}</p>}
                       {detail.longDescription && (
-                        <div className="space-y-3 whitespace-pre-line text-sm text-luxe-ash/90">
+                        <div className="space-y-3 whitespace-pre-line text-sm">
                           {detail.longDescription.split('\n').map((paragraph, idx) => (
                             <p key={idx}>{paragraph}</p>
                           ))}
@@ -220,31 +212,31 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
                       )}
                     </div>
                     <div className="space-y-3">
-                      <h3 className="font-serif text-xl text-luxe-ivory">Coverage</h3>
-                      <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.3em] text-luxe-ash">
+                      <h3 className="font-serif text-xl text-luxe-ebony dark:text-luxe-ivory">Coverage</h3>
+                      <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/70">
                         {detail.coverage.length ? (
                           detail.coverage.map((item) => (
-                            <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                            <span key={item} className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
                               {item}
                             </span>
                           ))
                         ) : (
-                          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Comprehensive Support</span>
+                          <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">Comprehensive Support</span>
                         )}
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <h3 className="font-serif text-xl text-luxe-ivory">Levels</h3>
-                      <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.3em] text-luxe-ash">
+                      <h3 className="font-serif text-xl text-luxe-ebony dark:text-luxe-ivory">Levels</h3>
+                      <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/70">
                         {detail.levelTags.map((level) => (
-                          <span key={level} className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                          <span key={level} className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
                             {level}
                           </span>
                         ))}
                       </div>
                     </div>
                     {isLoading && (
-                      <div className="text-xs uppercase tracking-[0.3em] text-luxe-ash">Refreshing details…</div>
+                      <div className="text-xs uppercase tracking-[0.3em] text-luxe-ash dark:text-luxe-ash/70">Refreshing details…</div>
                     )}
                   </div>
                 </div>
