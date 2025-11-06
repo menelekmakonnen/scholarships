@@ -1,8 +1,8 @@
 'use client';
 
-import { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { IconXMark } from './icons';
 
 export interface FilterState {
   levels: Set<string>;
@@ -66,103 +66,113 @@ export function FilterPanel({
     });
   };
 
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+      }
+    };
+    document.body.classList.add('dialog-open');
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.classList.remove('dialog-open');
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open, onClose]);
+
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-40" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black/70" />
-        </Transition.Child>
-        <div className="fixed inset-0 overflow-hidden">
-          <div className="absolute inset-0 flex justify-end">
-            <Transition.Child
-              as={Fragment}
-              enter="transform transition ease-out duration-300"
-              enterFrom="translate-x-full"
-              enterTo="translate-x-0"
-              leave="transform transition ease-in duration-200"
-              leaveFrom="translate-x-0"
-              leaveTo="translate-x-full"
-            >
-              <Dialog.Panel className="flex h-full w-full max-w-[min(520px,66vw)] sm:max-w-[40vw] md:max-w-[33vw] flex-col overflow-y-auto border-l border-black/10 bg-gradient-to-b from-white/95 via-white/90 to-white/80 p-8 shadow-aurora dark:border-white/10 dark:from-luxe-charcoal/95 dark:via-luxe-ebony/95 dark:to-black/95">
-                <div className="mb-8 flex items-center justify-between">
-                  <Dialog.Title className="font-serif text-2xl text-luxe-ebony dark:text-luxe-ivory">Refine Scholarships</Dialog.Title>
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="rounded-full border border-black/10 bg-white/70 p-2 text-luxe-ebony transition hover:border-luxe-gold/50 hover:text-luxe-gold dark:border-white/10 dark:bg-white/5 dark:text-luxe-ivory"
-                    aria-label="Close filters"
-                  >
-                    <XMarkIcon className="h-6 w-6" />
-                  </button>
+    <AnimatePresence>
+      {open && (
+        <div className="fixed inset-0 z-40" role="presentation">
+          <motion.div
+            className="absolute inset-0 bg-black/70"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+          <motion.aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Scholarship filters"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="absolute right-0 top-0 flex h-full w-full max-w-[min(520px,66vw)] flex-col overflow-y-auto border-l border-black/10 bg-gradient-to-b from-white/95 via-white/90 to-white/80 p-8 shadow-aurora focus:outline-none dark:border-white/10 dark:from-luxe-charcoal/95 dark:via-luxe-ebony/95 dark:to-black/95 sm:max-w-[40vw] md:max-w-[33vw]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-8 flex items-center justify-between">
+              <h2 className="font-serif text-2xl text-luxe-ebony dark:text-luxe-ivory">Refine Scholarships</h2>
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-full border border-black/10 bg-white/70 p-2 text-luxe-ebony transition hover:border-luxe-gold/50 hover:text-luxe-gold focus:outline-none focus:ring-2 focus:ring-luxe-gold/30 dark:border-white/10 dark:bg-white/5 dark:text-luxe-ivory"
+                aria-label="Close filters"
+              >
+                <IconXMark className="h-7 w-7" />
+              </button>
+            </div>
+            <div className="space-y-10">
+              <section>
+                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Academic Level</h3>
+                <div className="flex flex-wrap gap-2">
+                  {levelOptions.map((level) => (
+                    <ToggleChip
+                      key={level}
+                      label={level}
+                      active={state.levels.has(level)}
+                      onToggle={() => toggleValue('levels', level)}
+                    />
+                  ))}
                 </div>
-                <div className="space-y-10">
-                  <section>
-                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Academic Level</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {levelOptions.map((level) => (
-                        <ToggleChip
-                          key={level}
-                          label={level}
-                          active={state.levels.has(level)}
-                          onToggle={() => toggleValue('levels', level)}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                  <section>
-                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Destination</h3>
-                    <div className="flex max-h-64 flex-wrap gap-2 overflow-y-auto pr-1">
-                      {countryOptions.map((country) => (
-                        <ToggleChip
-                          key={country}
-                          label={country}
-                          active={state.countries.has(country)}
-                          onToggle={() => toggleValue('countries', country)}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                  <section>
-                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Coverage</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {coverageOptions.map((item) => (
-                        <ToggleChip
-                          key={item}
-                          label={item}
-                          active={state.coverage.has(item)}
-                          onToggle={() => toggleValue('coverage', item)}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                  <section>
-                    <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Deadline</h3>
-                    <label className="flex items-center justify-between gap-4 rounded-2xl border border-black/10 bg-white/70 px-4 py-3 text-xs uppercase tracking-[0.3em] text-luxe-ash dark:border-white/10 dark:bg-white/5 dark:text-luxe-ash/80">
-                      <span>Include expired deadlines</span>
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-luxe-ash bg-transparent"
-                        checked={state.showExpired}
-                        onChange={(event) =>
-                          onUpdate((prev) => ({ ...prev, showExpired: event.target.checked }))
-                        }
-                      />
-                    </label>
-                  </section>
+              </section>
+              <section>
+                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Destination</h3>
+                <div className="flex max-h-64 flex-wrap gap-2 overflow-y-auto pr-1">
+                  {countryOptions.map((country) => (
+                    <ToggleChip
+                      key={country}
+                      label={country}
+                      active={state.countries.has(country)}
+                      onToggle={() => toggleValue('countries', country)}
+                    />
+                  ))}
                 </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
+              </section>
+              <section>
+                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Coverage</h3>
+                <div className="flex flex-wrap gap-2">
+                  {coverageOptions.map((item) => (
+                    <ToggleChip
+                      key={item}
+                      label={item}
+                      active={state.coverage.has(item)}
+                      onToggle={() => toggleValue('coverage', item)}
+                    />
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Deadline</h3>
+                <label className="flex items-center justify-between gap-4 rounded-2xl border border-black/10 bg-white/70 px-4 py-3 text-xs uppercase tracking-[0.3em] text-luxe-ash dark:border-white/10 dark:bg-white/5 dark:text-luxe-ash/80">
+                  <span>Include expired deadlines</span>
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-luxe-ash bg-transparent"
+                    checked={state.showExpired}
+                    onChange={(event) =>
+                      onUpdate((prev) => ({ ...prev, showExpired: event.target.checked }))
+                    }
+                  />
+                </label>
+              </section>
+            </div>
+          </motion.aside>
         </div>
-      </Dialog>
-    </Transition.Root>
+      )}
+    </AnimatePresence>
   );
 }

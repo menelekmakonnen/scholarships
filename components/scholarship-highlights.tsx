@@ -1,4 +1,4 @@
-import { CalendarDaysIcon, GlobeAmericasIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { IconCalendar, IconGlobe, IconSparkles } from './icons';
 import { format, formatDistanceStrict } from 'date-fns';
 import type { ScholarshipPreview } from '@/lib/types';
 
@@ -39,14 +39,14 @@ export function ScholarshipHighlights({ scholarships }: ScholarshipHighlightsPro
       title: 'Active Scholarships',
       value: totalActive.toLocaleString(),
       description: 'Open awards meticulously curated and ready for applications.',
-      icon: SparklesIcon,
+      icon: IconSparkles,
       accent: 'from-luxe-gold/50 via-luxe-gold/20 to-transparent'
     },
     {
       title: 'Global Destinations',
       value: uniqueCountries.toLocaleString(),
       description: 'Countries represented across this season\'s catalogue.',
-      icon: GlobeAmericasIcon,
+      icon: IconGlobe,
       accent: 'from-luxe-emerald/40 via-luxe-gold/10 to-transparent'
     },
     {
@@ -55,7 +55,7 @@ export function ScholarshipHighlights({ scholarships }: ScholarshipHighlightsPro
       description: upcoming
         ? `${upcoming.name} closes ${upcoming.in}.`
         : 'Many scholarships review applications throughout the year.',
-      icon: CalendarDaysIcon,
+      icon: IconCalendar,
       accent: 'from-luxe-azure/40 via-luxe-gold/15 to-transparent'
     }
   ];
