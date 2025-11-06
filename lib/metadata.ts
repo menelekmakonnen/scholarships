@@ -1,6 +1,7 @@
 import { load } from 'cheerio';
 import { normalizeUrl, unique } from './utils';
 import type { Scholarship, ScholarshipDetail, ScholarshipPreview } from './types';
+import { buildScholarshipExcerpt } from './presenters';
 
 interface MetadataResult {
   images: string[];
@@ -101,10 +102,11 @@ export async function resolveScholarshipMetadata(scholarship: ScholarshipPreview
     const images = extractImages(scholarship.link, $);
     const { summary, long } = extractDescriptions($);
 
+    const fallbackSummary = buildScholarshipExcerpt(scholarship);
     const resolved: MetadataResult = {
       images,
-      summary: summary ?? null,
-      longDescription: long ?? summary ?? null
+      summary: summary ?? long ?? fallbackSummary,
+      longDescription: long ?? summary ?? fallbackSummary
     };
 
     metadataCache.set(scholarship.link, { expiresAt: now + CACHE_TTL, value: resolved });
@@ -117,11 +119,12 @@ export async function resolveScholarshipMetadata(scholarship: ScholarshipPreview
     };
   } catch (error) {
     console.error('Metadata resolution failed', error);
+    const fallbackSummary = buildScholarshipExcerpt(scholarship);
     return {
       ...scholarship,
       images: scholarship.previewImage ? [scholarship.previewImage] : [],
-      summary: scholarship.shortDescription ?? null,
-      longDescription: scholarship.shortDescription ?? null
+      summary: scholarship.shortDescription ?? fallbackSummary,
+      longDescription: scholarship.shortDescription ?? fallbackSummary
     };
   }
 }
@@ -129,10 +132,11 @@ export async function resolveScholarshipMetadata(scholarship: ScholarshipPreview
 export async function enrichScholarshipPreview(scholarship: Scholarship): Promise<ScholarshipPreview> {
   const cached = metadataCache.get(scholarship.link);
   if (cached) {
+    const fallbackSummary = buildScholarshipExcerpt(scholarship);
     return {
       ...scholarship,
       previewImage: cached.value.images[0] ?? null,
-      shortDescription: cached.value.summary ?? cached.value.longDescription ?? null
+      shortDescription: cached.value.summary ?? cached.value.longDescription ?? fallbackSummary
     };
   }
 
@@ -142,10 +146,11 @@ export async function enrichScholarshipPreview(scholarship: Scholarship): Promis
     const images = extractImages(scholarship.link, $);
     const { summary, long } = extractDescriptions($);
 
+    const fallbackSummary = buildScholarshipExcerpt(scholarship);
     const resolved: MetadataResult = {
       images,
-      summary: summary ?? long ?? null,
-      longDescription: long ?? summary ?? null
+      summary: summary ?? long ?? fallbackSummary,
+      longDescription: long ?? summary ?? fallbackSummary
     };
 
     metadataCache.set(scholarship.link, { expiresAt: Date.now() + CACHE_TTL, value: resolved });
@@ -153,14 +158,15 @@ export async function enrichScholarshipPreview(scholarship: Scholarship): Promis
     return {
       ...scholarship,
       previewImage: resolved.images[0] ?? null,
-      shortDescription: resolved.summary ?? resolved.longDescription ?? null
+      shortDescription: resolved.summary ?? resolved.longDescription ?? fallbackSummary
     };
   } catch (error) {
     console.error('Preview metadata fetch failed', error);
+    const fallbackSummary = buildScholarshipExcerpt(scholarship);
     return {
       ...scholarship,
       previewImage: null,
-      shortDescription: scholarship.shortDescription ?? null
+      shortDescription: scholarship.shortDescription ?? fallbackSummary
     };
   }
 }

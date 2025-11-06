@@ -1,4 +1,13 @@
-export type ScholarshipLevel = 'Undergraduate' | 'Masters' | 'PhD' | 'Postdoctoral' | 'Research' | 'Fellowship' | 'Other';
+export type ScholarshipLevel =
+  | 'Undergraduate'
+  | 'Masters'
+  | 'PhD'
+  | 'Postdoctoral'
+  | 'Research'
+  | 'Fellowship'
+  | 'Postgraduate'
+  | 'Professional'
+  | 'MBA';
 
 export interface Scholarship {
   id: string;

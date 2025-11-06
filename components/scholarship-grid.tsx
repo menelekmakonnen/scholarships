@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { IconAdjustments, IconChevronDown, IconMagnifier } from './icons';
 import clsx from 'clsx';
 import { ScholarshipCard } from './scholarship-card';
@@ -10,6 +10,16 @@ import type { ScholarshipPreview } from '@/lib/types';
 
 interface ScholarshipGridProps {
   scholarships: ScholarshipPreview[];
+  heading?: string;
+  description?: string;
+  initialFilters?: Partial<{
+    levels: string[];
+    countries: string[];
+    coverage: string[];
+    showExpired: boolean;
+  }>;
+  initialSort?: SortOption;
+  initialSearch?: string;
 }
 
 type SortOption = 'deadline-asc' | 'deadline-desc' | 'name-asc' | 'country-asc';
@@ -30,17 +40,40 @@ function compareDates(a: string | null, b: string | null) {
   return dateA - dateB;
 }
 
-export function ScholarshipGrid({ scholarships }: ScholarshipGridProps) {
+export function ScholarshipGrid({
+  scholarships,
+  heading,
+  description,
+  initialFilters,
+  initialSort = 'deadline-asc',
+  initialSearch = ''
+}: ScholarshipGridProps) {
   const [selected, setSelected] = useState<ScholarshipPreview | null>(null);
-  const [filters, setFilters] = useState<FilterState>({
-    levels: new Set<string>(),
-    countries: new Set<string>(),
-    coverage: new Set<string>(),
-    showExpired: false
-  });
-  const [sort, setSort] = useState<SortOption>('deadline-asc');
-  const [search, setSearch] = useState('');
+  const defaultFilters = useMemo<FilterState>(() => {
+    const base = initialFilters ?? {};
+    return {
+      levels: new Set(base.levels ?? []),
+      countries: new Set(base.countries ?? []),
+      coverage: new Set(base.coverage ?? []),
+      showExpired: base.showExpired ?? false
+    };
+  }, [initialFilters]);
+  const [filters, setFilters] = useState<FilterState>(defaultFilters);
+  const [sort, setSort] = useState<SortOption>(initialSort);
+  const [search, setSearch] = useState(initialSearch);
   const [filterOpen, setFilterOpen] = useState(false);
+
+  useEffect(() => {
+    setFilters(defaultFilters);
+  }, [defaultFilters]);
+
+  useEffect(() => {
+    setSort(initialSort);
+  }, [initialSort]);
+
+  useEffect(() => {
+    setSearch(initialSearch);
+  }, [initialSearch]);
 
   const levelOptions = useMemo(() => {
     const levels = new Set<string>();
@@ -107,14 +140,18 @@ export function ScholarshipGrid({ scholarships }: ScholarshipGridProps) {
     return sorted;
   }, [scholarships, filters, search, sort]);
 
+  const totalVisible = new Intl.NumberFormat().format(visibleScholarships.length);
+  const effectiveHeading = heading ?? 'Curated Opportunities';
+  const effectiveDescription =
+    description ??
+    `${totalVisible} scholarships tailored to your ambitions. Refine the gallery to uncover your perfect fit.`;
+
   return (
     <div className="space-y-10">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-2">
-          <h2 className="font-serif text-3xl text-luxe-ebony dark:text-luxe-ivory">Curated Opportunities</h2>
-          <p className="text-sm text-luxe-ash dark:text-luxe-ash/80">
-            {visibleScholarships.length} scholarships tailored to your ambitions. Refine the gallery to uncover your perfect fit.
-          </p>
+          <h2 className="font-serif text-3xl text-luxe-ebony dark:text-luxe-ivory">{effectiveHeading}</h2>
+          <p className="text-sm text-luxe-ash dark:text-luxe-ash/80">{effectiveDescription}</p>
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <div className="relative w-full sm:w-64">
@@ -159,9 +196,10 @@ export function ScholarshipGrid({ scholarships }: ScholarshipGridProps) {
         <div
           className={clsx(
             'grid gap-5',
-            'grid-cols-[repeat(auto-fill,minmax(170px,1fr))]',
-            'sm:grid-cols-[repeat(auto-fill,minmax(210px,1fr))]',
-            'xl:grid-cols-[repeat(auto-fill,minmax(240px,1fr))]'
+            'grid-cols-2',
+            'sm:grid-cols-3',
+            'lg:grid-cols-4',
+            'xl:grid-cols-5'
           )}
         >
           {visibleScholarships.map((scholarship) => (

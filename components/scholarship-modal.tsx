@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import useSWR from 'swr';
 import { IconArrowLeft, IconArrowRight, IconLink, IconXMark } from './icons';
 import type { ScholarshipDetail, ScholarshipPreview } from '@/lib/types';
+import { buildScholarshipExcerpt, buildScholarshipImageAlt } from '@/lib/presenters';
 import { formatDistanceStrict } from 'date-fns';
 
 interface ScholarshipModalProps {
@@ -59,6 +60,9 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
   const countdown = useCountdown(detail?.deadlineDate ?? null);
   const [index, setIndex] = useState(0);
   const panelRef = useRef<HTMLDivElement | null>(null);
+  const fallbackExcerpt = detail ? buildScholarshipExcerpt(detail) : scholarship ? buildScholarshipExcerpt(scholarship) : '';
+  const summaryCopy = detail?.summary ?? detail?.shortDescription ?? fallbackExcerpt;
+  const longCopy = detail?.longDescription?.trim();
 
   useEffect(() => {
     setIndex(0);
@@ -160,7 +164,7 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
                         <motion.img
                           key={images[index]}
                           src={images[index]}
-                          alt={detail.name}
+                          alt={buildScholarshipImageAlt(detail)}
                           className="max-h-full w-full object-contain"
                           initial={{ opacity: 0.3, scale: 1.05 }}
                           animate={{ opacity: 1, scale: 1 }}
@@ -230,10 +234,10 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
                   </div>
                 </div>
                 <div className="space-y-4 text-sm leading-relaxed text-luxe-ash dark:text-luxe-ash/80">
-                  {detail.summary && <p className="text-base text-luxe-ebony/90 dark:text-luxe-ivory/90">{detail.summary}</p>}
-                  {detail.longDescription && (
+                  <p className="text-base text-luxe-ebony/90 dark:text-luxe-ivory/90">{summaryCopy}</p>
+                  {longCopy && longCopy !== summaryCopy && (
                     <div className="space-y-3 whitespace-pre-line text-sm">
-                      {detail.longDescription.split('\n').map((paragraph, idx) => (
+                      {longCopy.split('\n').map((paragraph, idx) => (
                         <p key={idx}>{paragraph}</p>
                       ))}
                     </div>

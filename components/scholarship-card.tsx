@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import type { ScholarshipPreview } from '@/lib/types';
+import { buildScholarshipExcerpt, buildScholarshipImageAlt } from '@/lib/presenters';
 
 interface ScholarshipCardProps {
   scholarship: ScholarshipPreview;
@@ -27,7 +28,7 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
         {scholarship.previewImage ? (
           <Image
             src={scholarship.previewImage}
-            alt={scholarship.name}
+            alt={buildScholarshipImageAlt(scholarship)}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 20vw"
             className="object-cover transition-transform duration-[2500ms] ease-out group-hover:scale-110"
@@ -50,7 +51,7 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
       </div>
       <div className="flex flex-1 flex-col gap-4 p-4 text-sm text-luxe-ash dark:text-luxe-ash/80">
         <p className="line-clamp-3 text-[0.9rem] leading-relaxed text-luxe-ebony/85 dark:text-luxe-ivory/85">
-          {scholarship.shortDescription ?? 'Tap to unveil the full details of this prestigious award.'}
+          {scholarship.shortDescription ?? buildScholarshipExcerpt(scholarship)}
         </p>
         <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/70">
           {scholarship.coverage.slice(0, 3).map((item) => (

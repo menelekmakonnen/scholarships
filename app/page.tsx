@@ -1,9 +1,16 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { loadScholarships } from '@/lib/catalog';
 import { FeaturedHero } from '@/components/featured-hero';
 import { ScholarshipGrid } from '@/components/scholarship-grid';
 import { ScholarshipHighlights } from '@/components/scholarship-highlights';
 import type { ScholarshipPreview } from '@/lib/types';
+
+export const metadata: Metadata = {
+  title: 'Global Scholarships for International Students | ICUNi Atlas',
+  description:
+    'Discover a curated feed of fully funded Masters, PhD, MBA, and fellowship scholarships with live imagery, deadline countdowns, and intuitive filters.'
+};
 
 function pickFeaturedSet(scholarships: ScholarshipPreview[], count = 3): ScholarshipPreview[] {
   if (scholarships.length === 0) {

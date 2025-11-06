@@ -6,10 +6,12 @@ const LEVEL_KEYWORDS: Record<string, ScholarshipLevel> = {
   undergraduate: 'Undergraduate',
   bachelor: 'Undergraduate',
   bachelors: 'Undergraduate',
+  foundation: 'Undergraduate',
   master: 'Masters',
   masters: 'Masters',
-  postgraduate: 'Masters',
-  graduate: 'Masters',
+  postgraduate: 'Postgraduate',
+  graduate: 'Postgraduate',
+  postgrad: 'Postgraduate',
   phd: 'PhD',
   doctor: 'PhD',
   doctoral: 'PhD',
@@ -19,7 +21,13 @@ const LEVEL_KEYWORDS: Record<string, ScholarshipLevel> = {
   research: 'Research',
   researcher: 'Research',
   fellowship: 'Fellowship',
-  fellow: 'Fellowship'
+  fellow: 'Fellowship',
+  professional: 'Professional',
+  executive: 'Professional',
+  diploma: 'Professional',
+  certificate: 'Professional',
+  mba: 'MBA',
+  'business administration': 'MBA'
 };
 
 const DATE_FORMATS = [
@@ -52,9 +60,13 @@ export function normalizeLevels(value: string | null | undefined): ScholarshipLe
         levels.add(level);
       }
     }
+    if (/(any|all|various|multiple)/i.test(normalized)) {
+      levels.add('Undergraduate');
+      levels.add('Postgraduate');
+    }
   });
   if (levels.size === 0) {
-    return ['Other'];
+    return ['Postgraduate'];
   }
   return Array.from(levels);
 }
@@ -66,18 +78,32 @@ export function parseDeadline(value: string | null | undefined): { label: string
   if (/rolling|open|varies|ongoing|tba|not available|n\/a/i.test(trimmed)) {
     return { label: capitalize(trimmed), date: null };
   }
+  const normaliseMidday = (date: Date) => {
+    const clone = new Date(date.getTime());
+    clone.setHours(12, 0, 0, 0);
+    return clone;
+  };
+  const dateFormula = trimmed.match(/date\s*\(\s*(\d{4})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*\)/i);
+  if (dateFormula) {
+    const [, y, m, d] = dateFormula;
+    const parsed = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d), 12));
+    if (isValid(parsed)) {
+      const label = format(parsed, 'EEEE, MMMM do, yyyy');
+      return { label, date: parsed };
+    }
+  }
   let parsedDate: Date | null = null;
   for (const format of DATE_FORMATS) {
     const parsed = parse(trimmed, format, new Date());
     if (isValid(parsed)) {
-      parsedDate = parsed;
+      parsedDate = normaliseMidday(parsed);
       break;
     }
   }
   if (!parsedDate) {
     const auto = new Date(trimmed);
     if (isValid(auto)) {
-      parsedDate = auto;
+      parsedDate = normaliseMidday(auto);
     }
   }
   if (parsedDate) {

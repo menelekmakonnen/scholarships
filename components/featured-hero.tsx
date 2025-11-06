@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { ScholarshipPreview } from '@/lib/types';
+import { buildScholarshipExcerpt, buildScholarshipImageAlt } from '@/lib/presenters';
 
 interface FeaturedHeroProps {
   scholarships: ScholarshipPreview[];
@@ -48,7 +49,7 @@ export function FeaturedHero({ scholarships }: FeaturedHeroProps) {
             </h2>
           </div>
           <p className="max-w-2xl text-lg text-luxe-ash dark:text-luxe-ash/90">
-            {active.shortDescription ?? 'A distinguished opportunity curated for visionary scholars ready to embark on their next chapter.'}
+            {active.shortDescription ?? buildScholarshipExcerpt(active)}
           </p>
           <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/80">
             <span className="rounded-full border border-black/10 bg-white/70 px-4 py-2 dark:border-white/10 dark:bg-white/10">
@@ -100,7 +101,7 @@ export function FeaturedHero({ scholarships }: FeaturedHeroProps) {
               {active.previewImage ? (
                 <Image
                   src={active.previewImage}
-                  alt={active.name}
+                  alt={buildScholarshipImageAlt(active)}
                   fill
                   sizes="(max-width: 1024px) 100vw, 40vw"
                   priority
@@ -108,7 +109,7 @@ export function FeaturedHero({ scholarships }: FeaturedHeroProps) {
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-luxe-gold/30 via-white to-luxe-gold/20 text-sm uppercase tracking-[0.4em] text-luxe-ash dark:from-luxe-gold/15 dark:via-black/40 dark:to-luxe-gold/10">
-                  Imagery curating…
+                  Visual preview arriving shortly
                 </div>
               )}
             </motion.div>
