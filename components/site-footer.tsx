@@ -21,14 +21,9 @@ export function SiteFooter() {
           <div className="flex items-center gap-6 text-xs uppercase tracking-[0.25em] text-luxe-ash dark:text-luxe-ash/80">
             <span>© {year} ICUNi</span>
             <span className="hidden h-3 w-px bg-luxe-ash/30 md:inline" aria-hidden="true" />
-            <a
-              href="https://icuni.org"
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full border border-black/10 bg-white/80 px-4 py-2 text-[11px] font-semibold tracking-[0.35em] text-luxe-ebony transition hover:border-luxe-gold/50 hover:text-luxe-gold dark:border-white/10 dark:bg-white/10 dark:text-luxe-ivory"
-            >
-              Explore ICUNi
-            </a>
+            <span className="rounded-full border border-dashed border-luxe-gold/30 px-4 py-2 text-[11px] font-semibold tracking-[0.35em] text-luxe-ash/80 dark:text-luxe-ash/70">
+              Crafted for Scholars
+            </span>
           </div>
         </div>
         <div className="grid gap-4 text-xs uppercase tracking-[0.25em] text-luxe-ash dark:text-luxe-ash/80 sm:grid-cols-2">
@@ -50,14 +45,11 @@ export function SiteFooter() {
           <div className="space-y-3">
             <p className="font-semibold text-luxe-ebony dark:text-luxe-ivory">Stay Inspired</p>
             <p className="text-[11px] leading-relaxed text-luxe-ash dark:text-luxe-ash/75">
-              Subscribe to our monthly digest for newly released scholarships, application tips, and success stories from ICUNi alumni.
+              A monthly digest with new scholarships and application tips is on the way. Add us to your bookmarks and check back soon.
             </p>
-            <a
-              href="mailto:scholarships@icuni.org?subject=Scholarship%20Digest%20Signup"
-              className="inline-flex items-center justify-center rounded-full border border-luxe-gold/40 bg-gradient-to-r from-luxe-gold/20 to-transparent px-4 py-2 text-[11px] font-semibold tracking-[0.35em] text-luxe-ebony transition hover:border-luxe-gold/70 hover:text-luxe-gold dark:text-luxe-ivory"
-            >
-              Join the List
-            </a>
+            <div className="inline-flex items-center justify-center rounded-full border border-dashed border-luxe-gold/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-luxe-ash/80 dark:text-luxe-ash">
+              Join the List · Coming Soon
+            </div>
           </div>
         </div>
       </div>

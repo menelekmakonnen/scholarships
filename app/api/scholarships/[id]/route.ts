@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getScholarships } from '@/lib/sheets';
+import { loadScholarships } from '@/lib/catalog';
 import { resolveScholarshipMetadata } from '@/lib/metadata';
 
 export async function GET(_: Request, context: { params: { id: string } }) {
   try {
-    const scholarships = await getScholarships();
+    const scholarships = await loadScholarships();
     const scholarship = scholarships.find((item) => item.id === context.params.id);
     if (!scholarship) {
       return NextResponse.json({ message: 'Scholarship not found' }, { status: 404 });

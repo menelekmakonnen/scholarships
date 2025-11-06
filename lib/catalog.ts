@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import { getScholarships } from './sheets';
 import { enrichScholarshipPreview } from './metadata';
 import type { ScholarshipPreview } from './types';
@@ -20,9 +21,21 @@ async function withConcurrency<T, R>(items: T[], limit: number, iterator: (item:
   return results;
 }
 
-export async function loadScholarships(): Promise<ScholarshipPreview[]> {
+async function buildScholarshipCatalog(): Promise<ScholarshipPreview[]> {
   const scholarships = await getScholarships();
-  const enriched = await withConcurrency(scholarships, 4, (item) => enrichScholarshipPreview(item));
+  const enriched = await withConcurrency(scholarships, 8, (item) => enrichScholarshipPreview(item));
   enriched.sort((a, b) => a.name.localeCompare(b.name));
   return enriched;
+}
+
+const cachedCatalog = unstable_cache(buildScholarshipCatalog, ['scholarship-catalog'], {
+  revalidate: 60 * 30
+});
+
+export async function loadScholarships(): Promise<ScholarshipPreview[]> {
+  return cachedCatalog();
+}
+
+export async function loadScholarshipsFresh(): Promise<ScholarshipPreview[]> {
+  return buildScholarshipCatalog();
 }

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { getScholarships } from '@/lib/sheets';
 
 export const metadata: Metadata = {
@@ -73,14 +72,11 @@ export default async function AboutPage() {
             .
           </p>
           <p className="text-sm leading-relaxed text-luxe-ash dark:text-luxe-ash/75">
-            Curious about strategies for competitive scholarships? Explore our long-form guides covering essay mastery, recommendation letters, and interview preparation.
+            Curious about strategies for competitive scholarships? Our long-form guides on essays, recommendations, and interviews are being finalised and will launch soon.
           </p>
-          <Link
-            href="/guides"
-            className="inline-flex items-center justify-center rounded-full border border-luxe-gold/40 bg-gradient-to-r from-luxe-gold/25 to-transparent px-5 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-luxe-ebony transition hover:border-luxe-gold/70 hover:text-luxe-gold dark:text-luxe-ivory"
-          >
-            Visit Guides
-          </Link>
+          <div className="inline-flex items-center justify-center rounded-full border border-dashed border-luxe-gold/40 px-5 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-luxe-ash/80 dark:text-luxe-ash">
+            Guides Coming Soon
+          </div>
         </article>
       </section>
     </main>

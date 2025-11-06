@@ -1,31 +1,30 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 const GUIDES = [
   {
     slug: 'mext-scholarship-guide',
     title: 'How to Apply for the MEXT Scholarship',
     summary:
-      'Step-by-step advice for compiling a winning research proposal, preparing for embassy interviews, and aligning with Japan\'s development priorities.'
+      'Our deep-dive blueprint is in production. Expect tailored timelines, essay prompts, and interview prep tips soon.'
   },
   {
     slug: 'chevening-essay-playbook',
     title: 'Writing Standout Chevening Scholarship Essays',
     summary:
-      'Strategies for showcasing leadership impact, building a coherent global network story, and articulating a compelling return plan.'
+      'We are refining case studies and storytelling frameworks so you can craft unforgettable submissions. Coming soon.'
   },
   {
     slug: 'fully-funded-mba-roadmap',
     title: 'Your Roadmap to Fully Funded MBA Scholarships',
     summary:
-      'Position your professional achievements, craft a memorable GMAT waiver request, and target business schools with generous fellowships.'
+      'Comprehensive funding matrices and networking strategies are on the way. Stay tuned for the full release.'
   }
 ];
 
 export const metadata: Metadata = {
   title: 'Scholarship Guides | ICUNi',
   description:
-    'Dive into expert-written scholarship guides covering MEXT, Chevening, and fully funded MBAs. Learn how to craft essays, secure recommendations, and ace interviews.'
+    'Our long-form scholarship guides are currently in production. Sign up to be notified when deep-dive strategy playbooks launch.'
 };
 
 export default function GuidesPage() {
@@ -35,7 +34,7 @@ export default function GuidesPage() {
         <p className="text-xs uppercase tracking-[0.5em] text-luxe-ash dark:text-luxe-ash/70">Guides</p>
         <h1 className="font-serif text-4xl text-luxe-ebony dark:text-luxe-ivory sm:text-5xl">Scholarship Strategy Library</h1>
         <p className="mx-auto max-w-2xl text-base text-luxe-ash dark:text-luxe-ash/80">
-          Deepen your expertise with editorial features created by advisors and alumni. Each guide distils years of experience into actionable insights you can apply immediately.
+          Our editorial team is preparing immersive scholarship playbooks. Each feature will outline requirements, timelines, insider tips, and winning examples—check back soon.
         </p>
       </header>
       <section className="grid gap-6 md:grid-cols-3">
@@ -46,12 +45,9 @@ export default function GuidesPage() {
           >
             <h2 className="font-serif text-2xl text-luxe-ebony dark:text-luxe-ivory">{guide.title}</h2>
             <p className="text-sm leading-relaxed text-luxe-ash dark:text-luxe-ash/75">{guide.summary}</p>
-            <Link
-              href={`mailto:scholarships@icuni.org?subject=${encodeURIComponent(guide.title)}%20Insights`}
-              className="mt-auto inline-flex items-center justify-center rounded-full border border-luxe-gold/40 bg-gradient-to-r from-luxe-gold/25 to-transparent px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-luxe-ebony transition hover:border-luxe-gold/70 hover:text-luxe-gold dark:text-luxe-ivory"
-            >
-              Request Full Guide
-            </Link>
+            <div className="mt-auto inline-flex items-center justify-center rounded-full border border-dashed border-luxe-gold/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-luxe-ash/80 dark:text-luxe-ash">
+              Coming Soon
+            </div>
           </article>
         ))}
       </section>
