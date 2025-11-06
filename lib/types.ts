@@ -10,9 +10,9 @@ export interface Scholarship {
   deadlineDate: string | null;
   isExpired: boolean;
   link: string;
-  previewImage?: string | null;
-  shortDescription?: string | null;
-  metadataRefreshedAt?: string | null;
+  previewImage: string | null;
+  shortDescription: string | null;
+  metadataRefreshedAt: string | null;
 }
 
 export interface ScholarshipPreview extends Scholarship {
