@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { loadScholarships } from '@/lib/catalog';
 import { ScholarshipGrid } from '@/components/scholarship-grid';
+import type { ScholarshipLevel } from '@/lib/types';
 
-const LEVEL_SLUGS: Record<string, string> = {
+const LEVEL_SLUGS: Record<string, ScholarshipLevel> = {
   undergraduate: 'Undergraduate',
   undergrad: 'Undergraduate',
   bachelors: 'Undergraduate',
@@ -26,7 +27,7 @@ interface LevelPageProps {
   params: { level: string };
 }
 
-function getLevelLabel(slug: string): string | null {
+function getLevelLabel(slug: string): ScholarshipLevel | null {
   return LEVEL_SLUGS[slug.toLowerCase()] ?? null;
 }
 
