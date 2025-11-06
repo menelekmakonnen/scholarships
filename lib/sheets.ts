@@ -27,11 +27,26 @@ const COLUMN_MAP = {
 type SheetScholarship = Required<typeof COLUMN_MAP>;
 
 function parseResponse(payload: string): GoogleResponse {
-  const match = payload.match(/google\.visualization\.Query\.setResponse\((?<json>[\s\S]+?)\);?\s*$/);
-  if (!match || !match.groups?.json) {
-    throw new Error('Unexpected Google Sheets response format');
+  const marker = 'google.visualization.Query.setResponse(';
+  const markerIndex = payload.indexOf(marker);
+  if (markerIndex === -1) {
+    throw new Error('Unexpected Google Sheets response format: missing response wrapper');
   }
-  return JSON.parse(match.groups.json);
+
+  const jsonStart = payload.indexOf('{', markerIndex + marker.length);
+  const jsonEnd = payload.lastIndexOf('}');
+
+  if (jsonStart === -1 || jsonEnd === -1 || jsonEnd <= jsonStart) {
+    throw new Error('Unexpected Google Sheets response format: unable to locate JSON payload');
+  }
+
+  const jsonText = payload.slice(jsonStart, jsonEnd + 1);
+
+  try {
+    return JSON.parse(jsonText);
+  } catch (error) {
+    throw new Error('Failed to parse Google Sheets payload');
+  }
 }
 
 function mapRow(row: GoogleRow): Scholarship | null {

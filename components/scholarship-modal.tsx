@@ -117,13 +117,13 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
               <Dialog.Panel className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-luxe-charcoal/95 via-luxe-ebony/95 to-black/90 shadow-aurora">
                 <motion.button
                   onClick={handleClose}
-                  className="absolute right-6 top-6 z-10 rounded-full border border-white/20 bg-black/60 p-3.5 text-luxe-ivory transition hover:border-luxe-gold/60 hover:bg-black/80"
+                  className="absolute right-6 top-6 z-10 rounded-full border border-white/20 bg-black/60 p-4 text-luxe-ivory transition hover:border-luxe-gold/60 hover:bg-black/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-luxe-gold/60"
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   whileHover={{ scale: 1.05 }}
                   aria-label="Close scholarship"
                 >
-                  <XMarkIcon className="h-7 w-7" />
+                  <XMarkIcon className="h-8 w-8" />
                 </motion.button>
                 <div className="grid max-h-[90vh] grid-cols-1 overflow-hidden sm:grid-cols-[1.1fr_1fr]">
                   <div className="relative overflow-hidden border-b border-white/10 sm:border-b-0 sm:border-r">

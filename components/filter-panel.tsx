@@ -91,7 +91,7 @@ export function FilterPanel({
               leaveFrom="translate-x-0"
               leaveTo="translate-x-full"
             >
-              <Dialog.Panel className="flex h-full w-full max-w-[min(480px,80vw)] sm:max-w-[40vw] md:max-w-[33vw] flex-col overflow-y-auto border-l border-white/10 bg-gradient-to-b from-luxe-charcoal/95 via-luxe-ebony/95 to-black/95 p-8 shadow-aurora">
+              <Dialog.Panel className="flex h-full w-full max-w-[min(520px,66vw)] sm:max-w-[40vw] md:max-w-[33vw] flex-col overflow-y-auto border-l border-white/10 bg-gradient-to-b from-luxe-charcoal/95 via-luxe-ebony/95 to-black/95 p-8 shadow-aurora">
                 <div className="mb-8 flex items-center justify-between">
                   <Dialog.Title className="font-serif text-2xl text-luxe-ivory">Refine Scholarships</Dialog.Title>
                   <button
