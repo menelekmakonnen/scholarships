@@ -11,7 +11,9 @@ const config: Config = {
           charcoal: '#1c232b',
           ash: '#8b8f96',
           ivory: '#f4f0ea',
-          gold: '#d4af37'
+          gold: '#d4af37',
+          emerald: '#2fb78c',
+          azure: '#5b8def'
         }
       },
       fontFamily: {

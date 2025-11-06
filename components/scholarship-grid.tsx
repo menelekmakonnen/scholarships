@@ -1,7 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { AdjustmentsHorizontalIcon, ArrowDownCircleIcon } from '@heroicons/react/24/outline';
+import { Fragment, useMemo, useState } from 'react';
+import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { Listbox, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 import { ScholarshipCard } from './scholarship-card';
 import { ScholarshipModal } from './scholarship-modal';
@@ -14,12 +16,12 @@ interface ScholarshipGridProps {
 
 type SortOption = 'deadline-asc' | 'deadline-desc' | 'name-asc' | 'country-asc';
 
-const SORT_LABELS: Record<SortOption, string> = {
-  'deadline-asc': 'Deadline (Soonest)',
-  'deadline-desc': 'Deadline (Latest)',
-  'name-asc': 'Name (A–Z)',
-  'country-asc': 'Country (A–Z)'
-};
+const SORT_OPTIONS: Array<{ value: SortOption; label: string; helper: string }> = [
+  { value: 'deadline-asc', label: 'Deadline (Soonest)', helper: 'Prioritise scholarships closing soonest.' },
+  { value: 'deadline-desc', label: 'Deadline (Latest)', helper: 'Discover opportunities with the longest runway.' },
+  { value: 'name-asc', label: 'Name (A–Z)', helper: 'Alphabetical order by scholarship name.' },
+  { value: 'country-asc', label: 'Country (A–Z)', helper: 'Group scholarships by their first listed country.' }
+];
 
 function compareDates(a: string | null, b: string | null) {
   if (!a && !b) return 0;
@@ -125,31 +127,57 @@ export function ScholarshipGrid({ scholarships }: ScholarshipGridProps) {
               onChange={(event) => setSearch(event.target.value)}
               className="w-full rounded-full border border-black/10 bg-white/70 px-5 py-3 text-sm text-luxe-ebony placeholder:text-luxe-ash focus:border-luxe-gold/40 focus:outline-none focus:ring-2 focus:ring-luxe-gold/30 dark:border-white/10 dark:bg-white/10 dark:text-luxe-ivory"
             />
-            <ArrowDownCircleIcon className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-luxe-ash dark:text-luxe-ash/70" />
+            <MagnifyingGlassIcon className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-luxe-ash dark:text-luxe-ash/70" />
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs uppercase tracking-[0.3em] text-luxe-ash dark:text-luxe-ash/80">Sort</span>
-            <div className="flex flex-wrap gap-2">
-              {(Object.entries(SORT_LABELS) as [SortOption, string][]).map(([key, label]) => {
-                const active = sort === key;
-                return (
-                  <button
-                    type="button"
-                    key={key}
-                    onClick={() => setSort(key)}
-                    className={clsx(
-                      'rounded-full border px-4 py-2 text-[11px] uppercase tracking-[0.3em] transition',
-                      active
-                        ? 'border-luxe-gold/80 bg-gradient-to-r from-luxe-gold/30 to-luxe-gold/10 text-luxe-ebony shadow-sm dark:text-luxe-ivory'
-                        : 'border-black/10 bg-white/70 text-luxe-ash hover:border-luxe-gold/40 hover:text-luxe-gold dark:border-white/10 dark:bg-white/5'
-                    )}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <Listbox value={sort} onChange={setSort}>
+            {({ open }) => (
+              <div className="relative min-w-[220px]">
+                <Listbox.Label className="sr-only">Sort scholarships</Listbox.Label>
+                <Listbox.Button className="flex w-full items-center justify-between gap-3 rounded-full border border-luxe-gold/40 bg-white/80 px-5 py-3 text-xs uppercase tracking-[0.3em] text-luxe-ebony shadow-sm transition hover:border-luxe-gold/70 hover:text-luxe-gold dark:border-white/10 dark:bg-white/10 dark:text-luxe-ivory">
+                  <span>{SORT_OPTIONS.find((item) => item.value === sort)?.label ?? 'Sort scholarships'}</span>
+                  <ChevronDownIcon className={clsx('h-4 w-4 transition', open && 'rotate-180')} />
+                </Listbox.Button>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-150"
+                  enterFrom="opacity-0 -translate-y-1"
+                  enterTo="opacity-100 translate-y-0"
+                  leave="transition ease-in duration-100"
+                  leaveFrom="opacity-100 translate-y-0"
+                  leaveTo="opacity-0 -translate-y-1"
+                >
+                  <Listbox.Options className="absolute right-0 z-20 mt-2 w-72 overflow-hidden rounded-3xl border border-black/10 bg-white/95 p-2 text-sm shadow-aurora focus:outline-none dark:border-white/10 dark:bg-luxe-charcoal/95">
+                    {SORT_OPTIONS.map((option) => (
+                      <Listbox.Option
+                        key={option.value}
+                        value={option.value}
+                        className={({ active }) =>
+                          clsx(
+                            'flex cursor-pointer items-start gap-3 rounded-2xl px-4 py-3 text-left transition',
+                            active ? 'bg-luxe-gold/10 text-luxe-ebony dark:text-luxe-ivory' : 'text-luxe-ash dark:text-luxe-ash/80'
+                          )
+                        }
+                      >
+                        {({ selected }) => (
+                          <>
+                            <span className="mt-1 flex h-5 w-5 items-center justify-center rounded-full border border-luxe-gold/40 text-luxe-gold">
+                              {selected && <CheckIcon className="h-4 w-4" />}
+                            </span>
+                            <span>
+                              <span className="block font-semibold text-luxe-ebony dark:text-luxe-ivory">{option.label}</span>
+                              <span className="block text-xs uppercase tracking-[0.3em] text-luxe-ash/80 dark:text-luxe-ash/60">
+                                {option.helper}
+                              </span>
+                            </span>
+                          </>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Transition>
+              </div>
+            )}
+          </Listbox>
           <button
             type="button"
             onClick={() => setFilterOpen(true)}
@@ -162,7 +190,12 @@ export function ScholarshipGrid({ scholarships }: ScholarshipGridProps) {
       </div>
       {visibleScholarships.length > 0 ? (
         <div
-          className={clsx('grid gap-5', 'grid-cols-2', 'sm:grid-cols-2', 'md:grid-cols-3', 'xl:grid-cols-4')}
+          className={clsx(
+            'grid gap-5',
+            'grid-cols-[repeat(auto-fill,minmax(170px,1fr))]',
+            'sm:grid-cols-[repeat(auto-fill,minmax(210px,1fr))]',
+            'xl:grid-cols-[repeat(auto-fill,minmax(240px,1fr))]'
+          )}
         >
           {visibleScholarships.map((scholarship) => (
             <ScholarshipCard key={scholarship.id} scholarship={scholarship} onSelect={setSelected} />

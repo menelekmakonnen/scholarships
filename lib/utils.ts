@@ -81,7 +81,7 @@ export function parseDeadline(value: string | null | undefined): { label: string
     }
   }
   if (parsedDate) {
-    const label = format(parsedDate, 'MMMM d, yyyy');
+    const label = format(parsedDate, 'EEEE, MMMM do, yyyy');
     return { label, date: parsedDate };
   }
   return { label: capitalize(trimmed), date: null };

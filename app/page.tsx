@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { loadScholarships } from '@/lib/catalog';
 import { FeaturedHero } from '@/components/featured-hero';
 import { ScholarshipGrid } from '@/components/scholarship-grid';
+import { ScholarshipHighlights } from '@/components/scholarship-highlights';
 import type { ScholarshipPreview } from '@/lib/types';
 
 function pickFeaturedSet(scholarships: ScholarshipPreview[], count = 3): ScholarshipPreview[] {
@@ -19,6 +20,7 @@ export default async function Page() {
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-16 px-5 py-12 sm:px-8 lg:px-10">
       <FeaturedHero scholarships={featured} />
+      <ScholarshipHighlights scholarships={scholarships} />
       <Suspense fallback={<div className="text-luxe-ash">Loading scholarships…</div>}>
         <ScholarshipGrid scholarships={scholarships} />
       </Suspense>
