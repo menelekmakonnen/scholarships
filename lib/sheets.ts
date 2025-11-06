@@ -27,8 +27,11 @@ const COLUMN_MAP = {
 type SheetScholarship = Required<typeof COLUMN_MAP>;
 
 function parseResponse(payload: string): GoogleResponse {
-  const json = payload.replace(/^.*setResponse\(/, '').replace(/\);?\s*$/, '');
-  return JSON.parse(json);
+  const match = payload.match(/google\.visualization\.Query\.setResponse\((?<json>[\s\S]+?)\);?\s*$/);
+  if (!match || !match.groups?.json) {
+    throw new Error('Unexpected Google Sheets response format');
+  }
+  return JSON.parse(match.groups.json);
 }
 
 function mapRow(row: GoogleRow): Scholarship | null {
