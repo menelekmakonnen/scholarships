@@ -1,0 +1,258 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import { Dialog } from '@headlessui/react';
+import { motion, AnimatePresence } from 'framer-motion';
+import useSWR from 'swr';
+import { XMarkIcon, LinkIcon, ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import type { ScholarshipDetail, ScholarshipPreview } from '@/lib/types';
+import { formatDistanceStrict } from 'date-fns';
+
+interface ScholarshipModalProps {
+  open: boolean;
+  onClose: () => void;
+  scholarship: ScholarshipPreview | null;
+}
+
+const fetcher = (url: string) => fetch(url).then((res) => {
+  if (!res.ok) {
+    throw new Error('Failed to fetch scholarship');
+  }
+  return res.json();
+});
+
+function useCountdown(targetDate: string | null) {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!targetDate) return;
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
+  return useMemo(() => {
+    if (!targetDate) return { label: 'Open Deadline', expired: false };
+    const date = new Date(targetDate);
+    if (Number.isNaN(date.getTime())) {
+      return { label: 'Open Deadline', expired: false };
+    }
+    const expired = date.getTime() < now;
+    const label = expired
+      ? `${formatDistanceStrict(date, now)} ago`
+      : `${formatDistanceStrict(now, date)} remaining`;
+    return { label, expired };
+  }, [now, targetDate]);
+}
+
+export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModalProps) {
+  const { data, isLoading } = useSWR<ScholarshipDetail>(
+    () => (scholarship ? `/api/scholarships/${scholarship.id}` : null),
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false
+    }
+  );
+
+  const detail = data ?? (scholarship as ScholarshipDetail | null);
+  const countdown = useCountdown(detail?.deadlineDate ?? null);
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [detail?.id]);
+
+  const activeId = scholarship?.id;
+
+  useEffect(() => {
+    if (!open || !activeId) {
+      return;
+    }
+    document.body.classList.add('dialog-open');
+    const handler = () => {
+      onClose();
+    };
+    window.addEventListener('popstate', handler);
+    const state = { modal: activeId };
+    if (window.history.state?.modal) {
+      window.history.replaceState(state, '');
+    } else {
+      window.history.pushState(state, '');
+    }
+    return () => {
+      window.removeEventListener('popstate', handler);
+      document.body.classList.remove('dialog-open');
+    };
+  }, [open, activeId, onClose]);
+
+  const handleClose = () => {
+    if (window.history.state?.modal) {
+      window.history.back();
+    } else {
+      onClose();
+    }
+  };
+
+  const images = detail?.images?.length ? detail.images : scholarship?.previewImage ? [scholarship.previewImage] : [];
+
+  const next = () => {
+    if (!images.length) return;
+    setIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const previous = () => {
+    if (!images.length) return;
+    setIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  return (
+    <AnimatePresence>
+      {open && detail && (
+        <Dialog as="div" className="relative z-50" open={open} onClose={handleClose}>
+          <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 sm:items-center">
+              <Dialog.Panel className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-luxe-charcoal/95 via-luxe-ebony/95 to-black/90 shadow-aurora">
+                <motion.button
+                  onClick={handleClose}
+                  className="absolute right-6 top-6 z-10 rounded-full border border-white/20 bg-black/60 p-3.5 text-luxe-ivory transition hover:border-luxe-gold/60 hover:bg-black/80"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  whileHover={{ scale: 1.05 }}
+                  aria-label="Close scholarship"
+                >
+                  <XMarkIcon className="h-7 w-7" />
+                </motion.button>
+                <div className="grid max-h-[90vh] grid-cols-1 overflow-hidden sm:grid-cols-[1.1fr_1fr]">
+                  <div className="relative overflow-hidden border-b border-white/10 sm:border-b-0 sm:border-r">
+                    {images.length > 0 ? (
+                      <div className="relative h-full w-full">
+                        <div
+                          className="flex h-full w-full items-center justify-center bg-black/40"
+                          style={{ minHeight: '320px' }}
+                        >
+                          <AnimatePresence mode="wait">
+                            <motion.img
+                              key={images[index]}
+                              src={images[index]}
+                              alt={detail.name}
+                              className="max-h-full w-full object-contain"
+                              initial={{ opacity: 0.3, scale: 1.05 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.98 }}
+                              transition={{ duration: 0.6 }}
+                            />
+                          </AnimatePresence>
+                        </div>
+                        {images.length > 1 && (
+                          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-black/30 px-5 py-4 text-xs uppercase tracking-[0.4em] text-luxe-ash">
+                            <button
+                              onClick={previous}
+                              className="rounded-full border border-white/20 bg-black/60 p-2 hover:border-luxe-gold/60 hover:text-luxe-ivory"
+                            >
+                              <ArrowLeftIcon className="h-5 w-5" />
+                            </button>
+                            <span>
+                              {index + 1} / {images.length}
+                            </span>
+                            <button
+                              onClick={next}
+                              className="rounded-full border border-white/20 bg-black/60 p-2 hover:border-luxe-gold/60 hover:text-luxe-ivory"
+                            >
+                              <ArrowRightIcon className="h-5 w-5" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex h-full min-h-[320px] items-center justify-center bg-gradient-to-br from-luxe-gold/10 via-transparent to-luxe-gold/10 text-sm uppercase tracking-[0.4em] text-luxe-ash">
+                        Image coming soon
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-6 overflow-y-auto px-6 py-8 sm:px-8">
+                    <div className="space-y-4">
+                      <Dialog.Title className="font-serif text-3xl font-semibold leading-tight text-luxe-ivory">
+                        {detail.name}
+                      </Dialog.Title>
+                      <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.3em] text-luxe-ash">
+                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                          {detail.countries.length ? detail.countries.join(' • ') : 'Global'}
+                        </span>
+                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                          {detail.levelTags.join(' • ')}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-3 rounded-2xl border border-luxe-gold/30 bg-luxe-gold/10 p-5 text-sm text-luxe-ivory">
+                      <a
+                        href={detail.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-between gap-3 text-sm font-semibold uppercase tracking-[0.3em]"
+                      >
+                        <span>Open Scholarship Website</span>
+                        <LinkIcon className="h-5 w-5" />
+                      </a>
+                      <p className="text-xs text-luxe-ivory/70">
+                        Access the official announcement for eligibility, timelines, and application materials.
+                      </p>
+                    </div>
+                    <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs uppercase tracking-[0.3em] text-luxe-ash">
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-luxe-ivory">
+                        <span>Deadline</span>
+                        <span className="font-semibold text-luxe-gold">{detail.deadlineLabel}</span>
+                      </div>
+                      <div className={`text-xs ${countdown.expired ? 'text-red-300' : 'text-luxe-gold'}`}>
+                        {countdown.label}
+                      </div>
+                    </div>
+                    <div className="space-y-4 text-sm leading-relaxed text-luxe-ash">
+                      {detail.summary && <p className="text-base text-luxe-ivory/90">{detail.summary}</p>}
+                      {detail.longDescription && (
+                        <div className="space-y-3 whitespace-pre-line text-sm text-luxe-ash/90">
+                          {detail.longDescription.split('\n').map((paragraph, idx) => (
+                            <p key={idx}>{paragraph}</p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="font-serif text-xl text-luxe-ivory">Coverage</h3>
+                      <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.3em] text-luxe-ash">
+                        {detail.coverage.length ? (
+                          detail.coverage.map((item) => (
+                            <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                              {item}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Comprehensive Support</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="font-serif text-xl text-luxe-ivory">Levels</h3>
+                      <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.3em] text-luxe-ash">
+                        {detail.levelTags.map((level) => (
+                          <span key={level} className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                            {level}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    {isLoading && (
+                      <div className="text-xs uppercase tracking-[0.3em] text-luxe-ash">Refreshing details…</div>
+                    )}
+                  </div>
+                </div>
+              </Dialog.Panel>
+            </div>
+          </div>
+        </Dialog>
+      )}
+    </AnimatePresence>
+  );
+}
