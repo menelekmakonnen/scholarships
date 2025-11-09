@@ -1,8 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { IconAdjustments, IconChevronDown, IconMagnifier } from './icons';
-import clsx from 'clsx';
+import { useEffect, useMemo, useState } from 'react';
 import { ScholarshipCard } from './scholarship-card';
 import { ScholarshipModal } from './scholarship-modal';
 import { FilterPanel, FilterState } from './filter-panel';
@@ -74,9 +72,6 @@ export function ScholarshipGridWrapper({
   const [sort, setSort] = useState<SortOption>(initialSort);
   const [search, setSearch] = useState(initialSearch);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [isSticky, setIsSticky] = useState(false);
-  const ssfBarRef = useRef<HTMLDivElement>(null);
-  const ssfBarPlaceholderRef = useRef<HTMLDivElement>(null);
 
   // Sync with external filters
   useEffect(() => {
@@ -96,22 +91,6 @@ export function ScholarshipGridWrapper({
   useEffect(() => {
     setSearch(initialSearch);
   }, [initialSearch]);
-
-  // Smart SSF bar positioning
-  useEffect(() => {
-    const handleScroll = () => {
-      if (heroRef?.current && ssfBarPlaceholderRef.current) {
-        const heroBottom = heroRef.current.getBoundingClientRect().bottom;
-        const shouldStick = heroBottom < 0;
-        setIsSticky(shouldStick);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial check
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [heroRef]);
 
   const levelOptions = useMemo(() => {
     const levels = new Set<string>();
@@ -232,61 +211,6 @@ export function ScholarshipGridWrapper({
 
   return (
     <div className="space-y-10">
-      {/* Placeholder to maintain layout when SSF bar becomes fixed */}
-      <div ref={ssfBarPlaceholderRef} className="h-0" />
-
-      {/* SSF Bar */}
-      <div
-        ref={ssfBarRef}
-        className={clsx(
-          'transition-all duration-300',
-          isSticky
-            ? 'fixed top-0 left-0 right-0 bg-white/95 dark:bg-luxe-ebony/95 backdrop-blur-xl shadow-lg border-b border-black/10 dark:border-white/10 py-4 z-30'
-            : 'relative'
-        )}
-      >
-        <div className={clsx('mx-auto', isSticky ? 'max-w-7xl px-5 sm:px-8 lg:px-10' : '')}>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
-            <div className="relative flex-1 sm:max-w-xs">
-              <input
-                type="search"
-                placeholder="Search scholarships"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                className="w-full rounded-full border border-black/10 bg-white/70 px-5 py-3 text-sm text-luxe-ebony placeholder:text-luxe-ash focus:border-luxe-gold/40 focus:outline-none focus:ring-2 focus:ring-luxe-gold/30 dark:border-white/10 dark:bg-white/10 dark:text-luxe-ivory"
-              />
-              <IconMagnifier className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-luxe-ash dark:text-luxe-ash/70" />
-            </div>
-            <div className="relative min-w-[220px]">
-              <label htmlFor="sort-scholarships" className="sr-only">
-                Sort scholarships
-              </label>
-              <select
-                id="sort-scholarships"
-                value={sort}
-                onChange={(event) => setSort(event.target.value as SortOption)}
-                className="w-full appearance-none rounded-full border border-luxe-gold/40 bg-white/80 px-5 py-3 text-xs uppercase tracking-[0.3em] text-luxe-ebony shadow-sm transition hover:border-luxe-gold/70 hover:text-luxe-gold focus:border-luxe-gold/70 focus:outline-none focus:ring-2 focus:ring-luxe-gold/20 dark:border-white/10 dark:bg-white/10 dark:text-luxe-ivory"
-              >
-                {SORT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value} title={option.description}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <IconChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-luxe-ash dark:text-luxe-ash/70" />
-            </div>
-            <button
-              type="button"
-              onClick={() => setFilterOpen(true)}
-              className="flex items-center gap-3 rounded-full border border-luxe-gold/40 bg-gradient-to-r from-luxe-gold/20 to-transparent px-6 py-3 text-xs uppercase tracking-[0.3em] text-luxe-ebony transition hover:border-luxe-gold/70 hover:text-luxe-gold dark:text-luxe-ivory"
-            >
-              <IconAdjustments className="h-5 w-5" />
-              Filters
-            </button>
-          </div>
-        </div>
-      </div>
-
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-2">
           <h2 className="font-serif text-3xl text-luxe-ebony dark:text-luxe-ivory">{effectiveHeading}</h2>
@@ -295,15 +219,7 @@ export function ScholarshipGridWrapper({
       </div>
 
       {visibleScholarships.length > 0 ? (
-        <div
-          className={clsx(
-            'grid gap-5',
-            'grid-cols-2',
-            'sm:grid-cols-3',
-            'lg:grid-cols-4',
-            'xl:grid-cols-5'
-          )}
-        >
+        <div className="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {visibleScholarships.map((scholarship) => (
             <ScholarshipCard key={scholarship.id} scholarship={scholarship} onSelect={setSelected} />
           ))}

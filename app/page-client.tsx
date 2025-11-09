@@ -5,8 +5,9 @@ import { FeaturedHero } from '@/components/featured-hero';
 import { ScholarshipHighlights } from '@/components/scholarship-highlights';
 import { ScholarshipGridWrapper } from '@/components/scholarship-grid-wrapper';
 import { ScholarshipModal } from '@/components/scholarship-modal';
+import { SSFBar, type SortOption, type SortDirection } from '@/components/ssf-bar';
+import { FilterPanel, type FilterState } from '@/components/filter-panel';
 import type { ScholarshipPreview } from '@/lib/types';
-import type { FilterState } from '@/components/filter-panel';
 
 interface PageClientProps {
   featured: ScholarshipPreview[];
@@ -23,6 +24,10 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
     eligibilities: new Set(),
     showExpired: false
   });
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<SortOption>('deadline');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [filterOpen, setFilterOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
   // Filter scholarships based on current filters
@@ -67,23 +72,109 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
     setFilters(newFilters);
   };
 
+  const handleSortChange = (newSort: SortOption, newDirection: SortDirection) => {
+    setSort(newSort);
+    setSortDirection(newDirection);
+  };
+
+  const hasActiveFilters = useMemo(() => {
+    return (
+      filters.levels.size > 0 ||
+      filters.countries.size > 0 ||
+      filters.fundingTypes.size > 0 ||
+      filters.modalities.size > 0 ||
+      filters.eligibilities.size > 0
+    );
+  }, [filters]);
+
+  const handleClearFilters = () => {
+    setFilters({
+      levels: new Set(),
+      countries: new Set(),
+      fundingTypes: new Set(),
+      modalities: new Set(),
+      eligibilities: new Set(),
+      showExpired: filters.showExpired
+    });
+  };
+
+  // Generate filter options
+  const levelOptions = useMemo(() => {
+    const levels = new Set<string>();
+    scholarships.forEach((scholarship) => scholarship.levelTags.forEach((level) => levels.add(level)));
+    return Array.from(levels).sort();
+  }, [scholarships]);
+
+  const countryOptions = useMemo(() => {
+    const countries = new Set<string>();
+    scholarships.forEach((scholarship) => scholarship.countries.forEach((country) => countries.add(country)));
+    return Array.from(countries).sort();
+  }, [scholarships]);
+
+  const fundingTypeOptions = useMemo(() => {
+    const types = new Set<string>();
+    scholarships.forEach((scholarship) => {
+      if (scholarship.fundingType) types.add(scholarship.fundingType);
+    });
+    return Array.from(types).sort();
+  }, [scholarships]);
+
+  const modalityOptions = useMemo(() => {
+    const modalities = new Set<string>();
+    scholarships.forEach((scholarship) => scholarship.deliveryModes.forEach((mode) => modalities.add(mode)));
+    return Array.from(modalities).sort();
+  }, [scholarships]);
+
+  const eligibilityOptions = useMemo(() => {
+    const criteria = new Set<string>();
+    scholarships.forEach((scholarship) => scholarship.eligibility.forEach((item) => criteria.add(item)));
+    return Array.from(criteria).sort();
+  }, [scholarships]);
+
   return (
     <>
       <div ref={heroRef}>
         <FeaturedHero scholarships={featured} onSelect={setSelectedScholarship} />
       </div>
+
+      <SSFBar
+        search={search}
+        onSearchChange={setSearch}
+        sort={sort}
+        sortDirection={sortDirection}
+        onSortChange={handleSortChange}
+        onFilterClick={() => setFilterOpen(true)}
+        heroRef={heroRef}
+        hasActiveFilters={hasActiveFilters}
+        onClearFilters={handleClearFilters}
+      />
+
       <ScholarshipHighlights
         scholarships={filteredScholarships}
         onFilterClick={handleHighlightClick}
         onScholarshipSelect={setSelectedScholarship}
         onCountryFilter={handleCountryFilter}
       />
+
       <ScholarshipGridWrapper
         scholarships={scholarships}
-        heroRef={heroRef}
-        onFiltersChange={handleFiltersChange}
         externalFilters={filters}
+        initialSearch={search}
+        initialSort={`${sort}-${sortDirection}` as any}
       />
+
+      <FilterPanel
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        state={filters}
+        onUpdate={(updater) => setFilters(updater)}
+        levelOptions={levelOptions}
+        countryOptions={countryOptions}
+        fundingTypeOptions={fundingTypeOptions}
+        modalityOptions={modalityOptions}
+        eligibilityOptions={eligibilityOptions}
+      />
+
       <ScholarshipModal
         open={Boolean(selectedScholarship)}
         onClose={() => setSelectedScholarship(null)}

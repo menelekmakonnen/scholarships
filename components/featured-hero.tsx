@@ -30,7 +30,7 @@ export function FeaturedHero({ scholarships, onSelect }: FeaturedHeroProps) {
   };
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/80 p-10 shadow-aurora transition dark:border-white/10 dark:bg-white/5 h-[600px] lg:h-[500px]">
+    <section className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/80 p-10 shadow-aurora transition dark:border-white/10 dark:bg-white/5 h-[600px] lg:h-[650px]">
       <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-luxe-gold/20 opacity-60 dark:from-white/5 dark:via-transparent dark:to-luxe-gold/10" aria-hidden="true" />
       <div className="relative grid gap-10 h-full lg:grid-cols-[1.35fr_1fr]">
         <motion.div
