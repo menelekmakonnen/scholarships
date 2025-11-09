@@ -55,8 +55,12 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
   const [index, setIndex] = useState(0);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const fallbackExcerpt = detail ? buildScholarshipExcerpt(detail) : scholarship ? buildScholarshipExcerpt(scholarship) : '';
-  const summaryCopy = detail?.summary ?? detail?.shortDescription ?? fallbackExcerpt;
-  const longCopy = detail?.longDescription?.trim();
+  const summaryCopy = detail?.summary ?? detail?.sheetSummary ?? detail?.shortDescription ?? fallbackExcerpt;
+  const longCopy = detail?.longDescription?.trim() ?? detail?.sheetBreakdown ?? null;
+  const longParagraphs = longCopy ? longCopy.split(/\n{2,}/) : [];
+  const showLongCopy = Boolean(longCopy && (!summaryCopy || longCopy.trim() !== summaryCopy.trim()));
+  const eligibilityItems = detail?.eligibility ?? [];
+  const subjectItems = detail?.subjects ?? [];
 
   useEffect(() => {
     setIndex(0);
@@ -207,6 +211,11 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
                     <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
                       {detail.levelTags.join(' • ')}
                     </span>
+                    {detail.fundingType && (
+                      <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
+                        {detail.fundingType}
+                      </span>
+                    )}
                   </div>
                   <a
                     href={detail.link}
@@ -229,14 +238,41 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
                 </div>
                 <div className="space-y-4 text-sm leading-relaxed text-luxe-ash dark:text-luxe-ash/80">
                   <p className="text-base text-luxe-ebony/90 dark:text-luxe-ivory/90">{summaryCopy}</p>
-                  {longCopy && longCopy !== summaryCopy && (
-                    <div className="space-y-3 whitespace-pre-line text-sm">
-                      {longCopy.split('\n').map((paragraph, idx) => (
-                        <p key={idx}>{paragraph}</p>
+                  {showLongCopy && (
+                    <div className="space-y-3 text-sm">
+                      {longParagraphs.map((paragraph, idx) => (
+                        <p key={idx} className="whitespace-pre-line">
+                          {paragraph}
+                        </p>
                       ))}
                     </div>
                   )}
                 </div>
+                {(detail.organisation || detail.fundingType || detail.deliveryModes.length > 0) && (
+                  <div className="space-y-3 rounded-2xl border border-black/10 bg-white/80 p-4 text-sm text-luxe-ebony dark:border-white/10 dark:bg-white/5 dark:text-luxe-ivory">
+                    <p className="text-xs uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/70">
+                      Scholarship Format
+                    </p>
+                    {detail.organisation && (
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.3em] text-luxe-ash/80 dark:text-luxe-ash/60">Organisation</p>
+                        <p className="font-semibold leading-snug">{detail.organisation}</p>
+                      </div>
+                    )}
+                    {detail.fundingType && (
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.3em] text-luxe-ash/80 dark:text-luxe-ash/60">Funding</p>
+                        <p className="font-semibold leading-snug">{detail.fundingType}</p>
+                      </div>
+                    )}
+                    {detail.deliveryModes.length > 0 && (
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.3em] text-luxe-ash/80 dark:text-luxe-ash/60">Study Format</p>
+                        <p className="font-semibold leading-snug">{detail.deliveryModes.join(' • ')}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="space-y-3">
                   <h3 className="font-serif text-xl text-luxe-ebony dark:text-luxe-ivory">Coverage</h3>
                   <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/70">
@@ -261,6 +297,31 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
                     ))}
                   </div>
                 </div>
+                {eligibilityItems.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="font-serif text-xl text-luxe-ebony dark:text-luxe-ivory">Eligibility</h3>
+                    <ul className="space-y-2 text-sm leading-relaxed text-luxe-ash dark:text-luxe-ash/80">
+                      {eligibilityItems.map((item) => (
+                        <li key={item} className="flex gap-3">
+                          <span className="mt-2 inline-flex h-1.5 w-1.5 flex-none rounded-full bg-luxe-gold" aria-hidden />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {subjectItems.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="font-serif text-xl text-luxe-ebony dark:text-luxe-ivory">Available Subjects</h3>
+                    <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/70">
+                      {subjectItems.map((subject) => (
+                        <span key={subject} className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
+                          {subject}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {isLoading && (
                   <div className="text-xs uppercase tracking-[0.3em] text-luxe-ash dark:text-luxe-ash/70">Refreshing details…</div>
                 )}

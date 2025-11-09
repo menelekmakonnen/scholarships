@@ -49,8 +49,13 @@ export function FeaturedHero({ scholarships }: FeaturedHeroProps) {
             </h2>
           </div>
           <p className="max-w-2xl text-lg text-luxe-ash dark:text-luxe-ash/90">
-            {active.shortDescription ?? buildScholarshipExcerpt(active)}
+            {active.shortDescription ?? active.sheetSummary ?? buildScholarshipExcerpt(active)}
           </p>
+          {active.organisation && (
+            <p className="text-xs uppercase tracking-[0.45em] text-luxe-ash/80 dark:text-luxe-ash/70">
+              Presented by {active.organisation}
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/80">
             <span className="rounded-full border border-black/10 bg-white/70 px-4 py-2 dark:border-white/10 dark:bg-white/10">
               {active.countries.length > 0 ? active.countries.join(' • ') : 'Global'}
@@ -58,6 +63,11 @@ export function FeaturedHero({ scholarships }: FeaturedHeroProps) {
             <span className="rounded-full border border-black/10 bg-white/70 px-4 py-2 dark:border-white/10 dark:bg-white/10">
               {active.levelTags.join(' • ')}
             </span>
+            {active.fundingType && (
+              <span className="rounded-full border border-black/10 bg-white/70 px-4 py-2 dark:border-white/10 dark:bg-white/10">
+                {active.fundingType}
+              </span>
+            )}
             <span className="rounded-full border border-black/10 bg-white/70 px-4 py-2 dark:border-white/10 dark:bg-white/10">
               Deadline: {active.deadlineLabel}
             </span>

@@ -84,9 +84,14 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
       </div>
       <div className="flex flex-1 flex-col gap-4 p-4 text-sm text-luxe-ash dark:text-luxe-ash/80">
         <p className="line-clamp-3 text-[0.9rem] leading-relaxed text-luxe-ebony/85 dark:text-luxe-ivory/85">
-          {enriched.shortDescription ?? buildScholarshipExcerpt(enriched)}
+          {enriched.shortDescription ?? enriched.sheetSummary ?? buildScholarshipExcerpt(enriched)}
         </p>
         <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/70">
+          {enriched.fundingType && (
+            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
+              {enriched.fundingType}
+            </span>
+          )}
           {enriched.coverage.slice(0, 3).map((item) => (
             <span key={item} className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
               {item}

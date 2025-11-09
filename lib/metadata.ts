@@ -102,7 +102,8 @@ export async function resolveScholarshipMetadata(scholarship: ScholarshipPreview
     const images = extractImages(scholarship.link, $);
     const { summary, long } = extractDescriptions($);
 
-    const fallbackSummary = buildScholarshipExcerpt(scholarship);
+    const fallbackSummary =
+      scholarship.sheetSummary ?? scholarship.shortDescription ?? buildScholarshipExcerpt(scholarship);
     const resolved: MetadataResult = {
       images,
       summary: summary ?? long ?? fallbackSummary,
@@ -119,12 +120,13 @@ export async function resolveScholarshipMetadata(scholarship: ScholarshipPreview
     };
   } catch (error) {
     console.error('Metadata resolution failed', error);
-    const fallbackSummary = buildScholarshipExcerpt(scholarship);
+    const fallbackSummary =
+      scholarship.sheetSummary ?? scholarship.shortDescription ?? buildScholarshipExcerpt(scholarship);
     return {
       ...scholarship,
       images: scholarship.previewImage ? [scholarship.previewImage] : [],
-      summary: scholarship.shortDescription ?? fallbackSummary,
-      longDescription: scholarship.shortDescription ?? fallbackSummary
+      summary: scholarship.shortDescription ?? scholarship.sheetSummary ?? fallbackSummary,
+      longDescription: scholarship.sheetBreakdown ?? scholarship.shortDescription ?? fallbackSummary
     };
   }
 }
@@ -132,7 +134,8 @@ export async function resolveScholarshipMetadata(scholarship: ScholarshipPreview
 export async function enrichScholarshipPreview(scholarship: Scholarship): Promise<ScholarshipPreview> {
   const cached = metadataCache.get(scholarship.link);
   if (cached) {
-    const fallbackSummary = buildScholarshipExcerpt(scholarship);
+    const fallbackSummary =
+      scholarship.sheetSummary ?? scholarship.shortDescription ?? buildScholarshipExcerpt(scholarship);
     return {
       ...scholarship,
       previewImage: cached.value.images[0] ?? null,
@@ -146,7 +149,8 @@ export async function enrichScholarshipPreview(scholarship: Scholarship): Promis
     const images = extractImages(scholarship.link, $);
     const { summary, long } = extractDescriptions($);
 
-    const fallbackSummary = buildScholarshipExcerpt(scholarship);
+    const fallbackSummary =
+      scholarship.sheetSummary ?? scholarship.shortDescription ?? buildScholarshipExcerpt(scholarship);
     const resolved: MetadataResult = {
       images,
       summary: summary ?? long ?? fallbackSummary,
@@ -162,11 +166,12 @@ export async function enrichScholarshipPreview(scholarship: Scholarship): Promis
     };
   } catch (error) {
     console.error('Preview metadata fetch failed', error);
-    const fallbackSummary = buildScholarshipExcerpt(scholarship);
+    const fallbackSummary =
+      scholarship.sheetSummary ?? scholarship.shortDescription ?? buildScholarshipExcerpt(scholarship);
     return {
       ...scholarship,
       previewImage: null,
-      shortDescription: scholarship.shortDescription ?? fallbackSummary
+      shortDescription: scholarship.shortDescription ?? scholarship.sheetSummary ?? fallbackSummary
     };
   }
 }

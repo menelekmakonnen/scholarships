@@ -113,8 +113,8 @@ export function ScholarshipGrid({
       }
       if (query) {
         const text = `${scholarship.name} ${scholarship.countries.join(' ')} ${scholarship.levelTags.join(' ')} ${
-          scholarship.shortDescription ?? ''
-        }`;
+          scholarship.shortDescription ?? scholarship.sheetSummary ?? ''
+        } ${scholarship.coverage.join(' ')} ${scholarship.fundingType ?? ''} ${scholarship.organisation ?? ''}`;
         if (!text.toLowerCase().includes(query)) {
           return false;
         }

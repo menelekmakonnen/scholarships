@@ -15,12 +15,19 @@ export interface Scholarship {
   countries: string[];
   levelTags: ScholarshipLevel[];
   coverage: string[];
+  fundingType: string | null;
+  organisation: string | null;
   deadlineLabel: string;
   deadlineDate: string | null;
   isExpired: boolean;
   link: string;
   previewImage: string | null;
   shortDescription: string | null;
+  sheetSummary: string | null;
+  sheetBreakdown: string | null;
+  eligibility: string[];
+  subjects: string[];
+  deliveryModes: string[];
   metadataRefreshedAt: string | null;
 }
 

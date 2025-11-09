@@ -42,12 +42,25 @@ const DATE_FORMATS = [
   'MMM yyyy'
 ];
 
+const LIST_SEPARATORS = /[\n,;\/\\|•·]+/;
+
 export function normalizeList(value: string | null | undefined): string[] {
   if (!value) return [];
   return value
-    .split(/[\n,;/\\]+/)
+    .split(LIST_SEPARATORS)
     .map((entry) => entry.trim())
     .filter(Boolean);
+}
+
+export function normalizeTextBlock(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const normalised = value
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join('\n\n');
+  return normalised.length > 0 ? normalised : null;
 }
 
 export function normalizeLevels(value: string | null | undefined): ScholarshipLevel[] {
