@@ -122,3 +122,31 @@ export function IconSparkles(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function IconShield(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+      <path
+        {...roundStroke}
+        d="M12 2.5L4 5.5v5.5c0 5.5 3.5 10.5 8 12 4.5-1.5 8-6.5 8-12V5.5l-8-3z"
+      />
+      <path
+        {...roundStroke}
+        d="M9 11.5l2 2 4-4"
+      />
+    </svg>
+  );
+}
+
+export function IconAward(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+      <circle {...straightStroke} cx={12} cy={10} r={6} />
+      <path
+        {...roundStroke}
+        d="M8.21 13.89L7 21l5-3 5 3-1.21-7.11"
+      />
+      <circle cx={12} cy={10} r={2} fill="currentColor" />
+    </svg>
+  );
+}

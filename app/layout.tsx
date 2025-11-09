@@ -19,6 +19,21 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon_active.png" type="image/png" />
+        <link rel="alternate icon" href="/favicon_active.ico" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              document.addEventListener('visibilitychange', () => {
+                const link = document.querySelector("link[rel~='icon']");
+                if (!link) return;
+                link.href = document.visibilityState === 'visible' ? '/favicon_active.png' : '/favicon_inactive.png';
+              });
+            `
+          }}
+        />
+      </head>
       <body>
         <ThemeProvider>
           <div className="flex min-h-screen flex-col">

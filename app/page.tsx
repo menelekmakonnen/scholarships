@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { loadScholarships } from '@/lib/catalog';
+import { getScholarships } from '@/lib/sheets';
 import { FeaturedHero } from '@/components/featured-hero';
 import { ScholarshipGrid } from '@/components/scholarship-grid';
 import { ScholarshipHighlights } from '@/components/scholarship-highlights';
@@ -22,8 +22,8 @@ function pickFeaturedSet(scholarships: ScholarshipPreview[], count = 3): Scholar
 }
 
 export default async function Page() {
-  const scholarships = await loadScholarships();
-  const featuredSelection = pickFeaturedSet(scholarships);
+  const scholarships = await getScholarships();
+  const featuredSelection = pickFeaturedSet(scholarships, 3);
   const featured = await Promise.all(featuredSelection.map((entry) => enrichScholarshipPreview(entry)));
   const featuredMap = new Map(featured.map((item) => [item.id, item]));
   const hydratedScholarships = scholarships.map((entry) => featuredMap.get(entry.id) ?? entry);

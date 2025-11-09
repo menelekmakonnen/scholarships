@@ -7,6 +7,7 @@ import useSWRImmutable from 'swr/immutable';
 import type { ScholarshipDetail, ScholarshipPreview } from '@/lib/types';
 import { buildScholarshipExcerpt, buildScholarshipImageAlt } from '@/lib/presenters';
 import { fetchScholarshipDetail } from '@/lib/api';
+import { IconShield, IconAward } from './icons';
 
 interface ScholarshipCardProps {
   scholarship: ScholarshipPreview;
@@ -59,15 +60,24 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
     >
       <div className="relative aspect-[4/5] w-full overflow-hidden">
         {enriched.previewImage ? (
-          <Image
-            src={enriched.previewImage}
-            alt={buildScholarshipImageAlt(enriched)}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 20vw"
-            className="object-cover transition-transform duration-[2500ms] ease-out group-hover:scale-110"
-          />
+          <>
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-luxe-gold/30 via-luxe-ivory/40 to-luxe-emerald/20">
+              <IconShield className="h-32 w-32 text-luxe-gold/30 transition-all duration-1000 group-hover:scale-110 group-hover:text-luxe-gold/40" />
+            </div>
+            <Image
+              src={enriched.previewImage}
+              alt={buildScholarshipImageAlt(enriched)}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 20vw"
+              className="object-cover transition-transform duration-[2500ms] ease-out group-hover:scale-110"
+            />
+          </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-luxe-gold/30 via-white to-luxe-gold/20" />
+          <div className="absolute inset-0 bg-gradient-to-br from-luxe-gold/30 via-luxe-ivory/40 to-luxe-emerald/20">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <IconAward className="h-32 w-32 text-luxe-gold/50 transition-all duration-700 group-hover:scale-110 group-hover:text-luxe-gold/70" />
+            </div>
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4 space-y-2 text-sm text-white sm:space-y-3">
