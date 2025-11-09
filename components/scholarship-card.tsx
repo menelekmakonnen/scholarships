@@ -61,8 +61,16 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
       <div className="relative aspect-[4/5] w-full overflow-hidden">
         {enriched.previewImage ? (
           <>
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-luxe-gold/30 via-luxe-ivory/40 to-luxe-emerald/20">
-              <IconShield className="h-32 w-32 text-luxe-gold/30 transition-all duration-1000 group-hover:scale-110 group-hover:text-luxe-gold/40" />
+            <div className={`absolute inset-0 flex items-center justify-center ${
+              enriched.fundingType?.toLowerCase().includes('full')
+                ? 'bg-gradient-to-br from-luxe-gold/40 via-luxe-ivory/40 to-luxe-emerald/30'
+                : 'bg-gradient-to-br from-luxe-azure/30 via-luxe-ivory/40 to-luxe-gold/20'
+            }`}>
+              {enriched.fundingType?.toLowerCase().includes('full') ? (
+                <IconAward className="h-32 w-32 text-luxe-gold/40 transition-all duration-1000 group-hover:scale-110 group-hover:text-luxe-gold/50" />
+              ) : (
+                <IconShield className="h-32 w-32 text-luxe-azure/40 transition-all duration-1000 group-hover:scale-110 group-hover:text-luxe-azure/50" />
+              )}
             </div>
             <Image
               src={enriched.previewImage}
@@ -73,13 +81,31 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
             />
           </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-luxe-gold/30 via-luxe-ivory/40 to-luxe-emerald/20">
+          <div className={`absolute inset-0 ${
+            enriched.fundingType?.toLowerCase().includes('full')
+              ? 'bg-gradient-to-br from-luxe-gold/40 via-luxe-ivory/40 to-luxe-emerald/30'
+              : 'bg-gradient-to-br from-luxe-azure/30 via-luxe-ivory/40 to-luxe-gold/20'
+          }`}>
             <div className="absolute inset-0 flex items-center justify-center">
-              <IconAward className="h-32 w-32 text-luxe-gold/50 transition-all duration-700 group-hover:scale-110 group-hover:text-luxe-gold/70" />
+              {enriched.fundingType?.toLowerCase().includes('full') ? (
+                <IconAward className="h-32 w-32 text-luxe-gold/60 transition-all duration-700 group-hover:scale-110 group-hover:text-luxe-gold/80" />
+              ) : (
+                <IconShield className="h-32 w-32 text-luxe-azure/50 transition-all duration-700 group-hover:scale-110 group-hover:text-luxe-azure/70" />
+              )}
             </div>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+        {/* Funding Type Badge */}
+        {enriched.fundingType && (
+          <div className={`absolute top-4 right-4 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wider ${
+            enriched.fundingType.toLowerCase().includes('full')
+              ? 'bg-luxe-gold/90 text-white border border-luxe-gold/30 shadow-lg'
+              : 'bg-luxe-azure/90 text-white border border-luxe-azure/30 shadow-lg'
+          }`}>
+            {enriched.fundingType}
+          </div>
+        )}
         <div className="absolute bottom-4 left-4 right-4 space-y-2 text-sm text-white sm:space-y-3">
           <span className="inline-flex items-center rounded-full border border-white/30 bg-black/45 px-3 py-1 text-[10px] uppercase tracking-[0.45em]">
             {enriched.levelTags.join(' • ')}

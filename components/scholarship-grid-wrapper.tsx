@@ -12,6 +12,9 @@ interface ScholarshipGridWrapperProps {
   scholarships: ScholarshipPreview[];
   heading?: string;
   description?: string;
+  heroRef?: React.RefObject<HTMLDivElement>;
+  externalFilters?: FilterState;
+  onFiltersChange?: (filters: FilterState) => void;
   initialFilters?: Partial<{
     levels: string[];
     countries: string[];
@@ -46,12 +49,16 @@ export function ScholarshipGridWrapper({
   scholarships,
   heading,
   description,
+  heroRef,
+  externalFilters,
+  onFiltersChange,
   initialFilters,
   initialSort = 'deadline-asc',
   initialSearch = ''
 }: ScholarshipGridWrapperProps) {
   const [selected, setSelected] = useState<ScholarshipPreview | null>(null);
   const defaultFilters = useMemo<FilterState>(() => {
+    if (externalFilters) return externalFilters;
     const base = initialFilters ?? {};
     return {
       levels: new Set(base.levels ?? []),
@@ -61,7 +68,8 @@ export function ScholarshipGridWrapper({
       eligibilities: new Set(base.eligibilities ?? []),
       showExpired: base.showExpired ?? false
     };
-  }, [initialFilters]);
+  }, [initialFilters, externalFilters]);
+
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sort, setSort] = useState<SortOption>(initialSort);
   const [search, setSearch] = useState(initialSearch);
@@ -69,6 +77,13 @@ export function ScholarshipGridWrapper({
   const [isSticky, setIsSticky] = useState(false);
   const ssfBarRef = useRef<HTMLDivElement>(null);
   const ssfBarPlaceholderRef = useRef<HTMLDivElement>(null);
+
+  // Sync with external filters
+  useEffect(() => {
+    if (externalFilters) {
+      setFilters(externalFilters);
+    }
+  }, [externalFilters]);
 
   useEffect(() => {
     setFilters(defaultFilters);
@@ -82,23 +97,21 @@ export function ScholarshipGridWrapper({
     setSearch(initialSearch);
   }, [initialSearch]);
 
+  // Smart SSF bar positioning
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsSticky(!entry.isIntersecting);
-      },
-      {
-        threshold: [0],
-        rootMargin: '-1px 0px 0px 0px'
+    const handleScroll = () => {
+      if (heroRef?.current && ssfBarPlaceholderRef.current) {
+        const heroBottom = heroRef.current.getBoundingClientRect().bottom;
+        const shouldStick = heroBottom < 0;
+        setIsSticky(shouldStick);
       }
-    );
+    };
 
-    if (ssfBarPlaceholderRef.current) {
-      observer.observe(ssfBarPlaceholderRef.current);
-    }
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial check
 
-    return () => observer.disconnect();
-  }, []);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [heroRef]);
 
   const levelOptions = useMemo(() => {
     const levels = new Set<string>();
@@ -187,6 +200,30 @@ export function ScholarshipGridWrapper({
     return sorted;
   }, [scholarships, filters, search, sort]);
 
+  const handleFilterUpdate = (updater: (prev: FilterState) => FilterState) => {
+    setFilters((prev) => {
+      const base: FilterState = {
+        levels: new Set(prev.levels),
+        countries: new Set(prev.countries),
+        fundingTypes: new Set(prev.fundingTypes),
+        modalities: new Set(prev.modalities),
+        eligibilities: new Set(prev.eligibilities),
+        showExpired: prev.showExpired
+      };
+      const next = updater(base);
+      const newFilters = {
+        levels: new Set(next.levels),
+        countries: new Set(next.countries),
+        fundingTypes: new Set(next.fundingTypes),
+        modalities: new Set(next.modalities),
+        eligibilities: new Set(next.eligibilities),
+        showExpired: next.showExpired
+      };
+      onFiltersChange?.(newFilters);
+      return newFilters;
+    });
+  };
+
   const totalVisible = new Intl.NumberFormat().format(visibleScholarships.length);
   const effectiveHeading = heading ?? 'Curated Opportunities';
   const effectiveDescription =
@@ -202,9 +239,9 @@ export function ScholarshipGridWrapper({
       <div
         ref={ssfBarRef}
         className={clsx(
-          'transition-all duration-300 z-20',
+          'transition-all duration-300',
           isSticky
-            ? 'fixed top-0 left-0 right-0 bg-white/95 dark:bg-luxe-ebony/95 backdrop-blur-xl shadow-lg border-b border-black/10 dark:border-white/10 py-4'
+            ? 'fixed top-0 left-0 right-0 bg-white/95 dark:bg-luxe-ebony/95 backdrop-blur-xl shadow-lg border-b border-black/10 dark:border-white/10 py-4 z-30'
             : 'relative'
         )}
       >
@@ -276,16 +313,18 @@ export function ScholarshipGridWrapper({
           <p>No scholarships match your filters yet.</p>
           <button
             type="button"
-            onClick={() =>
-              setFilters({
-                levels: new Set(),
-                countries: new Set(),
-                fundingTypes: new Set(),
-                modalities: new Set(),
-                eligibilities: new Set(),
+            onClick={() => {
+              const clearedFilters = {
+                levels: new Set<string>(),
+                countries: new Set<string>(),
+                fundingTypes: new Set<string>(),
+                modalities: new Set<string>(),
+                eligibilities: new Set<string>(),
                 showExpired: filters.showExpired
-              })
-            }
+              };
+              setFilters(clearedFilters);
+              onFiltersChange?.(clearedFilters);
+            }}
             className="rounded-full border border-luxe-gold/40 bg-gradient-to-r from-luxe-gold/20 to-transparent px-6 py-2 text-xs uppercase tracking-[0.3em] text-luxe-ebony transition hover:border-luxe-gold/70 hover:text-luxe-gold dark:text-luxe-ivory"
           >
             Clear All Filters
@@ -296,34 +335,20 @@ export function ScholarshipGridWrapper({
         open={filterOpen}
         onClose={() => setFilterOpen(false)}
         state={filters}
-        onUpdate={(updater) =>
-          setFilters((prev) => {
-            const base: FilterState = {
-              levels: new Set(prev.levels),
-              countries: new Set(prev.countries),
-              fundingTypes: new Set(prev.fundingTypes),
-              modalities: new Set(prev.modalities),
-              eligibilities: new Set(prev.eligibilities),
-              showExpired: prev.showExpired
-            };
-            const next = updater(base);
-            return {
-              levels: new Set(next.levels),
-              countries: new Set(next.countries),
-              fundingTypes: new Set(next.fundingTypes),
-              modalities: new Set(next.modalities),
-              eligibilities: new Set(next.eligibilities),
-              showExpired: next.showExpired
-            };
-          })
-        }
+        onUpdate={handleFilterUpdate}
         levelOptions={levelOptions}
         countryOptions={countryOptions}
         fundingTypeOptions={fundingTypeOptions}
         modalityOptions={modalityOptions}
         eligibilityOptions={eligibilityOptions}
       />
-      <ScholarshipModal open={Boolean(selected)} onClose={() => setSelected(null)} scholarship={selected} />
+      <ScholarshipModal
+        open={Boolean(selected)}
+        onClose={() => setSelected(null)}
+        scholarship={selected}
+        allScholarships={visibleScholarships}
+        onNavigate={setSelected}
+      />
     </div>
   );
 }
