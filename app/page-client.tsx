@@ -170,9 +170,10 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
 
       <ScholarshipGridWrapper
         scholarships={scholarships}
-        externalFilters={filters}
-        initialSearch={search}
-        initialSort={`${sort}-${sortDirection}` as any}
+        filters={filters}
+        search={search}
+        sort={sort}
+        sortDirection={sortDirection}
       />
 
       <FilterPanel
