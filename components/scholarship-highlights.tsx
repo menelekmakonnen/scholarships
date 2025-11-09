@@ -10,6 +10,7 @@ interface ScholarshipHighlightsProps {
   onFilterClick?: (filterType: 'active' | 'countries' | 'deadline') => void;
   onScholarshipSelect?: (scholarship: ScholarshipPreview) => void;
   onCountryFilter?: (country: string) => void;
+  onFundingTypeFilter?: (fundingType: string) => void;
 }
 
 function getUpcomingDeadline(scholarships: ScholarshipPreview[]) {
@@ -34,7 +35,7 @@ function getUpcomingDeadline(scholarships: ScholarshipPreview[]) {
   };
 }
 
-export function ScholarshipHighlights({ scholarships, onFilterClick, onScholarshipSelect, onCountryFilter }: ScholarshipHighlightsProps) {
+export function ScholarshipHighlights({ scholarships, onFilterClick, onScholarshipSelect, onCountryFilter, onFundingTypeFilter }: ScholarshipHighlightsProps) {
   const [activeModal, setActiveModal] = useState<string | null>(null);
 
   const handlePanelClick = (id: string) => {
@@ -59,6 +60,19 @@ export function ScholarshipHighlights({ scholarships, onFilterClick, onScholarsh
     new Set(scholarships.flatMap((entry) => (entry.countries.length ? entry.countries : ['Global'])))
   ).sort();
 
+  // Calculate top 4 countries by scholarship count
+  const countryScholarshipCount = new Map<string, number>();
+  scholarships.forEach((scholarship) => {
+    const countries = scholarship.countries.length ? scholarship.countries : ['Global'];
+    countries.forEach((country) => {
+      countryScholarshipCount.set(country, (countryScholarshipCount.get(country) || 0) + 1);
+    });
+  });
+  const topCountries = Array.from(countryScholarshipCount.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([country]) => country);
+
   const metrics = [
     {
       id: 'active',
@@ -68,10 +82,32 @@ export function ScholarshipHighlights({ scholarships, onFilterClick, onScholarsh
       icon: IconSparkles,
       accent: 'from-luxe-gold/50 via-luxe-gold/20 to-transparent',
       details: (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <p className="text-sm text-luxe-ash dark:text-luxe-ash/80">
             We currently have <strong className="text-luxe-gold">{totalActive}</strong> active scholarships available for applications across various study levels and disciplines.
           </p>
+
+          {/* Funding Type Filter Buttons */}
+          {onFundingTypeFilter && (
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.3em] text-luxe-ash/70">Filter by funding type:</p>
+              <div className="flex flex-wrap gap-2">
+                {['Full', 'Partial', 'Full (and more)', 'Partial (and more)'].map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      setActiveModal(null);
+                      onFundingTypeFilter(type);
+                    }}
+                    className="rounded-full border border-luxe-gold/30 bg-white/50 px-3 py-1.5 text-[10px] uppercase tracking-[0.3em] transition hover:border-luxe-gold/50 hover:bg-luxe-gold/10 dark:bg-white/5"
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="grid gap-2 text-xs">
             {activeScholarships.slice(0, 5).map((s) => (
               <button
@@ -101,23 +137,52 @@ export function ScholarshipHighlights({ scholarships, onFilterClick, onScholarsh
       icon: IconGlobe,
       accent: 'from-luxe-emerald/40 via-luxe-gold/10 to-transparent',
       details: (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <p className="text-sm text-luxe-ash dark:text-luxe-ash/80">
             Our catalogue spans <strong className="text-luxe-gold">{uniqueCountries}</strong> countries and territories worldwide, offering diverse study destinations.
           </p>
-          <div className="flex flex-wrap gap-2">
-            {countriesList.map((country) => (
-              <button
-                key={country}
-                onClick={() => {
-                  setActiveModal(null);
-                  onCountryFilter?.(country);
-                }}
-                className="rounded-full border border-luxe-gold/20 bg-white/50 px-3 py-1 text-xs dark:bg-white/5 transition hover:border-luxe-gold/40 hover:bg-luxe-gold/10 cursor-pointer"
-              >
-                {country}
-              </button>
-            ))}
+
+          {/* Top 4 Countries */}
+          {topCountries.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.3em] text-luxe-ash/70">Top destinations:</p>
+              <div className="grid grid-cols-2 gap-2">
+                {topCountries.map((country) => {
+                  const count = countryScholarshipCount.get(country) || 0;
+                  return (
+                    <button
+                      key={country}
+                      onClick={() => {
+                        setActiveModal(null);
+                        onCountryFilter?.(country);
+                      }}
+                      className="rounded-lg border border-luxe-emerald/30 bg-gradient-to-br from-luxe-emerald/10 to-luxe-gold/5 p-3 text-left transition hover:border-luxe-emerald/50 hover:from-luxe-emerald/20 dark:bg-white/5"
+                    >
+                      <div className="font-semibold text-sm text-luxe-ebony dark:text-luxe-ivory">{country}</div>
+                      <div className="text-[10px] text-luxe-ash dark:text-luxe-ash/70">{count} {count === 1 ? 'scholarship' : 'scholarships'}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-luxe-ash/70">All countries:</p>
+            <div className="flex flex-wrap gap-2">
+              {countriesList.map((country) => (
+                <button
+                  key={country}
+                  onClick={() => {
+                    setActiveModal(null);
+                    onCountryFilter?.(country);
+                  }}
+                  className="rounded-full border border-luxe-gold/20 bg-white/50 px-3 py-1 text-xs dark:bg-white/5 transition hover:border-luxe-gold/40 hover:bg-luxe-gold/10 cursor-pointer"
+                >
+                  {country}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )

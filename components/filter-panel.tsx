@@ -72,6 +72,10 @@ export function FilterPanel({
     });
   };
 
+  const clearFilter = (key: keyof FilterState) => {
+    onUpdate((prev) => ({ ...prev, [key]: new Set<string>() } as FilterState));
+  };
+
   useEffect(() => {
     if (!open) return;
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -123,7 +127,18 @@ export function FilterPanel({
             </div>
             <div className="space-y-10">
               <section>
-                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Academic Level</h3>
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Academic Level</h3>
+                  {state.levels.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => clearFilter('levels')}
+                      className="text-[10px] uppercase tracking-[0.3em] text-luxe-gold/70 hover:text-luxe-gold transition"
+                    >
+                      All
+                    </button>
+                  )}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {levelOptions.map((level) => (
                     <ToggleChip
@@ -136,7 +151,18 @@ export function FilterPanel({
                 </div>
               </section>
               <section>
-                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Destination</h3>
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Destination</h3>
+                  {state.countries.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => clearFilter('countries')}
+                      className="text-[10px] uppercase tracking-[0.3em] text-luxe-gold/70 hover:text-luxe-gold transition"
+                    >
+                      All
+                    </button>
+                  )}
+                </div>
                 <div className="flex max-h-64 flex-wrap gap-2 overflow-y-auto pr-1">
                   {countryOptions.map((country) => (
                     <ToggleChip
@@ -149,7 +175,18 @@ export function FilterPanel({
                 </div>
               </section>
               <section>
-                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Type of Funding</h3>
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Type of Funding</h3>
+                  {state.fundingTypes.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => clearFilter('fundingTypes')}
+                      className="text-[10px] uppercase tracking-[0.3em] text-luxe-gold/70 hover:text-luxe-gold transition"
+                    >
+                      All
+                    </button>
+                  )}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {fundingTypeOptions.map((item) => (
                     <ToggleChip
@@ -162,7 +199,18 @@ export function FilterPanel({
                 </div>
               </section>
               <section>
-                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">On-Campus or Remote</h3>
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">On-Campus or Remote</h3>
+                  {state.modalities.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => clearFilter('modalities')}
+                      className="text-[10px] uppercase tracking-[0.3em] text-luxe-gold/70 hover:text-luxe-gold transition"
+                    >
+                      All
+                    </button>
+                  )}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {modalityOptions.map((item) => (
                     <ToggleChip
@@ -175,7 +223,18 @@ export function FilterPanel({
                 </div>
               </section>
               <section>
-                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Eligibility Criteria</h3>
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Eligibility Criteria</h3>
+                  {state.eligibilities.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => clearFilter('eligibilities')}
+                      className="text-[10px] uppercase tracking-[0.3em] text-luxe-gold/70 hover:text-luxe-gold transition"
+                    >
+                      All
+                    </button>
+                  )}
+                </div>
                 <div className="flex max-h-64 flex-wrap gap-2 overflow-y-auto pr-1">
                   {eligibilityOptions.map((item) => (
                     <ToggleChip

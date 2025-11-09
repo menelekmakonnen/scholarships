@@ -68,6 +68,17 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
     });
   };
 
+  const handleFundingTypeFilter = (fundingType: string) => {
+    setFilters((prev) => {
+      const newFundingTypes = new Set(prev.fundingTypes);
+      newFundingTypes.add(fundingType);
+      return {
+        ...prev,
+        fundingTypes: newFundingTypes
+      };
+    });
+  };
+
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
@@ -154,6 +165,7 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
         onFilterClick={handleHighlightClick}
         onScholarshipSelect={setSelectedScholarship}
         onCountryFilter={handleCountryFilter}
+        onFundingTypeFilter={handleFundingTypeFilter}
       />
 
       <ScholarshipGridWrapper
