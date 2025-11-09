@@ -205,7 +205,7 @@ export function ScholarshipModal({ open, onClose, scholarship, allScholarships =
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-            className="relative z-10 w-full max-w-4xl overflow-hidden rounded-3xl border border-black/10 bg-white/95 shadow-aurora max-h-[calc(100vh-2rem)] sm:max-h-[90vh] focus:outline-none dark:border-white/10 dark:bg-gradient-to-br dark:from-luxe-charcoal/95 dark:via-luxe-ebony/95 dark:to-black/90 select-none"
+            className="relative z-10 w-full max-w-4xl rounded-3xl border border-black/10 bg-white/95 shadow-aurora max-h-[calc(100vh-2rem)] sm:max-h-[90vh] focus:outline-none dark:border-white/10 dark:bg-gradient-to-br dark:from-luxe-charcoal/95 dark:via-luxe-ebony/95 dark:to-black/90 select-none flex flex-col sm:grid sm:grid-cols-[1.1fr_1fr] overflow-hidden"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -248,8 +248,7 @@ export function ScholarshipModal({ open, onClose, scholarship, allScholarships =
                 )}
               </>
             )}
-            <div className="flex h-full flex-col sm:grid sm:grid-cols-[1.1fr_1fr]">
-              <div className="relative h-[320px] flex-shrink-0 overflow-hidden border-b border-black/10 bg-black/70 sm:h-full sm:border-b-0 sm:border-r dark:border-white/10 dark:bg-black/70">
+            <div className="relative h-[320px] flex-shrink-0 overflow-hidden border-b border-black/10 bg-black/70 sm:h-full sm:border-b-0 sm:border-r dark:border-white/10 dark:bg-black/70">
                 {images.length > 0 ? (
                   <div className="relative h-full w-full">
                     <div className="flex h-full w-full items-center justify-center bg-black/40">
@@ -421,7 +420,6 @@ export function ScholarshipModal({ open, onClose, scholarship, allScholarships =
                   <div className="text-xs uppercase tracking-[0.3em] text-luxe-ash dark:text-luxe-ash/70">Refreshing details…</div>
                 )}
               </div>
-            </div>
           </motion.div>
         </motion.div>
       )}
