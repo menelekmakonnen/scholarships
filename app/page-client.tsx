@@ -48,10 +48,19 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
     });
   }, [scholarships, filters]);
 
-  const handleHighlightClick = (filterType: 'active' | 'countries' | 'deadline', scholarship?: ScholarshipPreview) => {
-    if (scholarship) {
-      setSelectedScholarship(scholarship);
-    }
+  const handleHighlightClick = (filterType: 'active' | 'countries' | 'deadline') => {
+    // Will be implemented to apply filters or show modal
+  };
+
+  const handleCountryFilter = (country: string) => {
+    setFilters((prev) => {
+      const newCountries = new Set(prev.countries);
+      newCountries.add(country);
+      return {
+        ...prev,
+        countries: newCountries
+      };
+    });
   };
 
   const handleFiltersChange = (newFilters: FilterState) => {
@@ -65,9 +74,9 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
       </div>
       <ScholarshipHighlights
         scholarships={filteredScholarships}
-        onHighlightClick={handleHighlightClick}
-        filters={filters}
-        onFilterChange={setFilters}
+        onFilterClick={handleHighlightClick}
+        onScholarshipSelect={setSelectedScholarship}
+        onCountryFilter={handleCountryFilter}
       />
       <ScholarshipGridWrapper
         scholarships={scholarships}

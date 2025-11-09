@@ -13,6 +13,8 @@ interface ScholarshipModalProps {
   open: boolean;
   onClose: () => void;
   scholarship: ScholarshipPreview | null;
+  allScholarships?: ScholarshipPreview[];
+  onNavigate?: (scholarship: ScholarshipPreview) => void;
 }
 
 function useCountdown(targetDate: string | null) {
@@ -40,7 +42,7 @@ function useCountdown(targetDate: string | null) {
   }, [now, targetDate]);
 }
 
-export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModalProps) {
+export function ScholarshipModal({ open, onClose, scholarship, allScholarships = [], onNavigate }: ScholarshipModalProps) {
   const { data, isLoading } = useSWR<ScholarshipDetail>(
     () => (scholarship ? `/api/scholarships/${scholarship.id}` : null),
     (url) => fetchScholarshipDetail<ScholarshipDetail>(url),
@@ -115,6 +117,68 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
     setIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
+  // Navigation between scholarships
+  const currentScholarshipIndex = scholarship ? allScholarships.findIndex((s) => s.id === scholarship.id) : -1;
+  const hasPreviousScholarship = currentScholarshipIndex > 0;
+  const hasNextScholarship = currentScholarshipIndex >= 0 && currentScholarshipIndex < allScholarships.length - 1;
+
+  const navigateToPreviousScholarship = () => {
+    if (hasPreviousScholarship && onNavigate) {
+      onNavigate(allScholarships[currentScholarshipIndex - 1]);
+    }
+  };
+
+  const navigateToNextScholarship = () => {
+    if (hasNextScholarship && onNavigate) {
+      onNavigate(allScholarships[currentScholarshipIndex + 1]);
+    }
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' && hasPreviousScholarship) {
+        e.preventDefault();
+        navigateToPreviousScholarship();
+      } else if (e.key === 'ArrowRight' && hasNextScholarship) {
+        e.preventDefault();
+        navigateToNextScholarship();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, hasPreviousScholarship, hasNextScholarship, currentScholarshipIndex]);
+
+  // Touch/swipe navigation
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const swipeThreshold = 50;
+    const diff = touchStartX.current - touchEndX.current;
+
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0 && hasNextScholarship) {
+        // Swipe left -> next scholarship
+        navigateToNextScholarship();
+      } else if (diff < 0 && hasPreviousScholarship) {
+        // Swipe right -> previous scholarship
+        navigateToPreviousScholarship();
+      }
+    }
+  };
+
   return (
     <AnimatePresence>
       {open && detail && (
@@ -141,7 +205,10 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-            className="relative z-10 w-full max-w-4xl overflow-hidden rounded-3xl border border-black/10 bg-white/95 shadow-aurora max-h-[calc(100vh-2rem)] sm:max-h-[90vh] focus:outline-none dark:border-white/10 dark:bg-gradient-to-br dark:from-luxe-charcoal/95 dark:via-luxe-ebony/95 dark:to-black/90"
+            className="relative z-10 w-full max-w-4xl overflow-hidden rounded-3xl border border-black/10 bg-white/95 shadow-aurora max-h-[calc(100vh-2rem)] sm:max-h-[90vh] focus:outline-none dark:border-white/10 dark:bg-gradient-to-br dark:from-luxe-charcoal/95 dark:via-luxe-ebony/95 dark:to-black/90 select-none"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             <motion.button
               onClick={handleClose}
@@ -153,6 +220,34 @@ export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModa
             >
               <IconXMark className="h-9 w-9" />
             </motion.button>
+            {allScholarships.length > 1 && (
+              <>
+                {hasPreviousScholarship && (
+                  <motion.button
+                    onClick={navigateToPreviousScholarship}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-20 rounded-full border border-luxe-gold/40 bg-white/90 p-3 text-luxe-ebony transition hover:border-luxe-gold/70 hover:bg-luxe-gold/20 hover:text-luxe-gold focus:outline-none focus:ring-2 focus:ring-luxe-gold/30 dark:border-luxe-gold/30 dark:bg-black/80 dark:text-luxe-ivory"
+                    initial={{ scale: 0.85, opacity: 0, x: -20 }}
+                    animate={{ scale: 1, opacity: 1, x: 0 }}
+                    whileHover={{ scale: 1.1 }}
+                    aria-label="Previous scholarship"
+                  >
+                    <IconArrowLeft className="h-6 w-6" />
+                  </motion.button>
+                )}
+                {hasNextScholarship && (
+                  <motion.button
+                    onClick={navigateToNextScholarship}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-20 rounded-full border border-luxe-gold/40 bg-white/90 p-3 text-luxe-ebony transition hover:border-luxe-gold/70 hover:bg-luxe-gold/20 hover:text-luxe-gold focus:outline-none focus:ring-2 focus:ring-luxe-gold/30 dark:border-luxe-gold/30 dark:bg-black/80 dark:text-luxe-ivory"
+                    initial={{ scale: 0.85, opacity: 0, x: 20 }}
+                    animate={{ scale: 1, opacity: 1, x: 0 }}
+                    whileHover={{ scale: 1.1 }}
+                    aria-label="Next scholarship"
+                  >
+                    <IconArrowRight className="h-6 w-6" />
+                  </motion.button>
+                )}
+              </>
+            )}
             <div className="flex max-h-full flex-col overflow-hidden sm:grid sm:grid-cols-[1.1fr_1fr]">
               <div className="relative max-h-[320px] overflow-hidden border-b border-black/10 bg-black/70 sm:max-h-none sm:h-full sm:border-b-0 sm:border-r dark:border-white/10 dark:bg-black/70">
                 {images.length > 0 ? (

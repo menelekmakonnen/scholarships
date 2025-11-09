@@ -8,6 +8,8 @@ import { useState } from 'react';
 interface ScholarshipHighlightsProps {
   scholarships: ScholarshipPreview[];
   onFilterClick?: (filterType: 'active' | 'countries' | 'deadline') => void;
+  onScholarshipSelect?: (scholarship: ScholarshipPreview) => void;
+  onCountryFilter?: (country: string) => void;
 }
 
 function getUpcomingDeadline(scholarships: ScholarshipPreview[]) {
@@ -27,15 +29,19 @@ function getUpcomingDeadline(scholarships: ScholarshipPreview[]) {
   return {
     label: format(date, 'EEEE, MMMM do'),
     in: formatDistanceStrict(Date.now(), date, { addSuffix: true }),
-    name: upcoming.name
+    name: upcoming.name,
+    scholarship: upcoming
   };
 }
 
-export function ScholarshipHighlights({ scholarships, onFilterClick }: ScholarshipHighlightsProps) {
+export function ScholarshipHighlights({ scholarships, onFilterClick, onScholarshipSelect, onCountryFilter }: ScholarshipHighlightsProps) {
   const [activeModal, setActiveModal] = useState<string | null>(null);
 
   const handlePanelClick = (id: string) => {
-    if (onFilterClick) {
+    // Special handling for "Next Deadline" - open scholarship directly
+    if (id === 'deadline' && upcoming?.scholarship && onScholarshipSelect) {
+      onScholarshipSelect(upcoming.scholarship);
+    } else if (onFilterClick) {
       onFilterClick(id as 'active' | 'countries' | 'deadline');
     } else {
       setActiveModal(id);
@@ -68,10 +74,17 @@ export function ScholarshipHighlights({ scholarships, onFilterClick }: Scholarsh
           </p>
           <div className="grid gap-2 text-xs">
             {activeScholarships.slice(0, 5).map((s) => (
-              <div key={s.id} className="rounded-lg border border-luxe-gold/20 bg-white/50 p-2 dark:bg-white/5">
+              <button
+                key={s.id}
+                onClick={() => {
+                  setActiveModal(null);
+                  onScholarshipSelect?.(s);
+                }}
+                className="rounded-lg border border-luxe-gold/20 bg-white/50 p-2 dark:bg-white/5 text-left transition hover:border-luxe-gold/40 hover:bg-luxe-gold/10 cursor-pointer"
+              >
                 <div className="font-semibold text-luxe-ebony dark:text-luxe-ivory">{s.name}</div>
                 <div className="text-luxe-ash dark:text-luxe-ash/70">{s.deadlineLabel}</div>
-              </div>
+              </button>
             ))}
             {activeScholarships.length > 5 && (
               <p className="text-center text-luxe-ash">...and {activeScholarships.length - 5} more</p>
@@ -94,12 +107,16 @@ export function ScholarshipHighlights({ scholarships, onFilterClick }: Scholarsh
           </p>
           <div className="flex flex-wrap gap-2">
             {countriesList.map((country) => (
-              <span
+              <button
                 key={country}
-                className="rounded-full border border-luxe-gold/20 bg-white/50 px-3 py-1 text-xs dark:bg-white/5"
+                onClick={() => {
+                  setActiveModal(null);
+                  onCountryFilter?.(country);
+                }}
+                className="rounded-full border border-luxe-gold/20 bg-white/50 px-3 py-1 text-xs dark:bg-white/5 transition hover:border-luxe-gold/40 hover:bg-luxe-gold/10 cursor-pointer"
               >
                 {country}
-              </span>
+              </button>
             ))}
           </div>
         </div>
@@ -119,11 +136,17 @@ export function ScholarshipHighlights({ scholarships, onFilterClick }: Scholarsh
           <p className="text-sm text-luxe-ash dark:text-luxe-ash/80">
             The next approaching deadline is <strong className="text-luxe-gold">{upcoming.in}</strong>.
           </p>
-          <div className="rounded-lg border border-luxe-gold/30 bg-white/50 p-4 dark:bg-white/5">
+          <button
+            onClick={() => {
+              setActiveModal(null);
+              onScholarshipSelect?.(upcoming.scholarship);
+            }}
+            className="w-full rounded-lg border border-luxe-gold/30 bg-white/50 p-4 dark:bg-white/5 text-left transition hover:border-luxe-gold/50 hover:bg-luxe-gold/10 cursor-pointer"
+          >
             <h4 className="font-serif text-lg font-semibold text-luxe-ebony dark:text-luxe-ivory">{upcoming.name}</h4>
             <p className="mt-2 text-sm text-luxe-ash dark:text-luxe-ash/80">Deadline: {upcoming.label}</p>
             <p className="mt-1 text-xs text-luxe-gold">Closes {upcoming.in}</p>
-          </div>
+          </button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -168,7 +191,7 @@ export function ScholarshipHighlights({ scholarships, onFilterClick }: Scholarsh
           onClick={() => setActiveModal(null)}
         >
           <div
-            className="relative max-w-2xl w-full max-h-[80vh] overflow-y-auto rounded-3xl border border-luxe-gold/30 bg-white/95 p-8 shadow-2xl dark:bg-luxe-ebony/95"
+            className="relative max-w-2xl w-full max-h-[80vh] overflow-y-auto rounded-3xl border border-luxe-gold/30 bg-white/95 p-8 shadow-2xl dark:bg-luxe-ebony/95 select-none"
             onClick={(e) => e.stopPropagation()}
           >
             <button
