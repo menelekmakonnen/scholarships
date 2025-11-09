@@ -248,8 +248,8 @@ export function ScholarshipModal({ open, onClose, scholarship, allScholarships =
                 )}
               </>
             )}
-            <div className="flex max-h-full flex-col overflow-hidden sm:grid sm:grid-cols-[1.1fr_1fr]">
-              <div className="relative max-h-[320px] overflow-hidden border-b border-black/10 bg-black/70 sm:max-h-none sm:h-full sm:border-b-0 sm:border-r dark:border-white/10 dark:bg-black/70">
+            <div className="flex max-h-full flex-col sm:grid sm:grid-cols-[1.1fr_1fr] sm:overflow-hidden">
+              <div className="relative h-[320px] flex-shrink-0 overflow-hidden border-b border-black/10 bg-black/70 sm:h-full sm:border-b-0 sm:border-r dark:border-white/10 dark:bg-black/70">
                 {images.length > 0 ? (
                   <div className="relative h-full w-full">
                     <div className="flex h-full w-full items-center justify-center bg-black/40">
@@ -294,7 +294,7 @@ export function ScholarshipModal({ open, onClose, scholarship, allScholarships =
                   </div>
                 )}
               </div>
-              <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-8 sm:max-h-[90vh] sm:px-8">
+              <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-8 sm:px-8 sm:h-full">
                 <div className="space-y-4">
                   <h2 className="font-serif text-3xl font-semibold leading-tight text-luxe-ebony dark:text-luxe-ivory">
                     {detail.name}

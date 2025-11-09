@@ -5,6 +5,7 @@ import { ScholarshipCard } from './scholarship-card';
 import { ScholarshipModal } from './scholarship-modal';
 import type { FilterState } from './filter-panel';
 import type { ScholarshipPreview } from '@/lib/types';
+import { determineFundingCategory } from '@/lib/funding-utils';
 
 interface ScholarshipGridWrapperProps {
   scholarships: ScholarshipPreview[];
@@ -51,8 +52,8 @@ export function ScholarshipGridWrapper({
         if (!match) return false;
       }
       if (filters.fundingTypes.size > 0) {
-        const match = scholarship.fundingType && filters.fundingTypes.has(scholarship.fundingType);
-        if (!match) return false;
+        const category = determineFundingCategory(scholarship.fundingType, scholarship.coverage);
+        if (!category || !filters.fundingTypes.has(category)) return false;
       }
       if (filters.modalities.size > 0) {
         const match = scholarship.deliveryModes.some((mode) => filters.modalities.has(mode));

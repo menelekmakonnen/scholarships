@@ -50,8 +50,27 @@ export function determineFundingCategory(
     return null;
   }
 
-  // Determine if there are additional benefits beyond base funding
-  const hasAdditionalBenefits = coverage.length > 1;
+  // Determine if there are additional benefits beyond base tuition funding
+  // Look for benefits like living allowance, stipend, travel, accommodation, etc.
+  const coverageText = coverage.join(' ').toLowerCase();
+  const additionalBenefitKeywords = [
+    'living allowance',
+    'stipend',
+    'travel',
+    'accommodation',
+    'housing',
+    'meals',
+    'flight',
+    'airfare',
+    'relocation',
+    'book allowance',
+    'research grant',
+    'conference'
+  ];
+
+  const hasAdditionalBenefits = additionalBenefitKeywords.some(keyword =>
+    coverageText.includes(keyword)
+  );
 
   if (inferredType === 'full') {
     return hasAdditionalBenefits ? 'Full (and more)' : 'Full';

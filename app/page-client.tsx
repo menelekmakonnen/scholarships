@@ -26,8 +26,10 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
     showExpired: false
   });
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<SortOption>('deadline');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [sortState, setSortState] = useState<{ sort: SortOption; direction: SortDirection }>({
+    sort: 'deadline',
+    direction: 'asc'
+  });
   const [filterOpen, setFilterOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
@@ -82,8 +84,7 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
   };
 
   const handleSortChange = (newSort: SortOption, newDirection: SortDirection) => {
-    setSort(newSort);
-    setSortDirection(newDirection);
+    setSortState({ sort: newSort, direction: newDirection });
   };
 
   const hasActiveFilters = useMemo(() => {
@@ -146,8 +147,8 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
       <SSFBar
         search={search}
         onSearchChange={setSearch}
-        sort={sort}
-        sortDirection={sortDirection}
+        sort={sortState.sort}
+        sortDirection={sortState.direction}
         onSortChange={handleSortChange}
         onFilterClick={() => setFilterOpen(true)}
         heroRef={heroRef}
@@ -166,8 +167,8 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
         scholarships={scholarships}
         filters={filters}
         search={search}
-        sort={sort}
-        sortDirection={sortDirection}
+        sort={sortState.sort}
+        sortDirection={sortState.direction}
       />
 
       <FilterPanel
