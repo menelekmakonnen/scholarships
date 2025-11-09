@@ -160,7 +160,36 @@ export function ScholarshipHighlights({ scholarships, onFilterClick, onScholarsh
 
   return (
     <>
-      <section className="grid gap-5 lg:grid-cols-3">
+      {/* Mobile: Horizontal scroll carousel */}
+      <section className="lg:hidden -mx-5 px-5 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-4 pb-2">
+          {metrics.map(({ id, title, value, description, icon: Icon, accent }) => (
+            <button
+              key={title}
+              onClick={() => handlePanelClick(id)}
+              className="relative overflow-hidden rounded-2xl border border-black/10 bg-white/90 p-5 shadow-lg transition hover:shadow-xl dark:border-white/10 dark:bg-white/10 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-luxe-gold/50 flex-shrink-0 w-[280px]"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-70`} aria-hidden />
+              <div className="relative flex flex-col gap-3">
+                <div className="flex items-center gap-2 text-luxe-gold dark:text-luxe-gold/90">
+                  <span className="rounded-full border border-luxe-gold/30 bg-white/80 p-2 dark:border-luxe-gold/20 dark:bg-black/40">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-luxe-ash dark:text-luxe-ash/80">{title}</p>
+                </div>
+                <p className="font-serif text-2xl text-luxe-ebony dark:text-luxe-ivory">{value}</p>
+                <p className="text-xs leading-relaxed text-luxe-ash dark:text-luxe-ash/80 line-clamp-2">{description}</p>
+                <p className="text-[10px] uppercase tracking-[0.25em] text-luxe-gold/70 dark:text-luxe-gold/60">
+                  Tap to view →
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Desktop: Grid */}
+      <section className="hidden lg:grid gap-5 lg:grid-cols-3">
         {metrics.map(({ id, title, value, description, icon: Icon, accent }) => (
           <button
             key={title}

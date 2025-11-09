@@ -52,7 +52,7 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
     <motion.button
       ref={ref}
       onClick={handleClick}
-      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-black/10 bg-white/85 text-left shadow-[0_18px_45px_-30px_rgba(15,20,25,0.35)] transition duration-500 hover:-translate-y-1 hover:border-luxe-gold/50 hover:shadow-[0_24px_65px_-32px_rgba(212,175,55,0.65)] focus:outline-none dark:border-white/10 dark:bg-white/10"
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-black/10 bg-white/85 text-left shadow-[0_18px_45px_-30px_rgba(15,20,25,0.35)] transition duration-500 hover:-translate-y-1 hover:border-luxe-gold/50 hover:shadow-[0_24px_65px_-32px_rgba(212,175,55,0.65)] focus:outline-none dark:border-white/10 dark:bg-white/10"
       whileHover={{ scale: 1.01 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -98,7 +98,7 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
         {/* Funding Type Badge */}
         {enriched.fundingType && (
-          <div className={`absolute top-4 right-4 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wider ${
+          <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 rounded-full px-2 py-1 sm:px-3 sm:py-1.5 text-[9px] sm:text-xs font-semibold uppercase tracking-wider ${
             enriched.fundingType.toLowerCase().includes('full')
               ? 'bg-luxe-gold/90 text-white border border-luxe-gold/30 shadow-lg'
               : 'bg-luxe-azure/90 text-white border border-luxe-azure/30 shadow-lg'
@@ -106,36 +106,32 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
             {enriched.fundingType}
           </div>
         )}
-        <div className="absolute bottom-4 left-4 right-4 space-y-2 text-sm text-white sm:space-y-3">
-          <span className="inline-flex items-center rounded-full border border-white/30 bg-black/45 px-3 py-1 text-[10px] uppercase tracking-[0.45em]">
+        <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 space-y-1.5 sm:space-y-2 text-sm text-white">
+          <span className="inline-flex items-center rounded-full border border-white/30 bg-black/45 px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[10px] uppercase tracking-[0.35em] sm:tracking-[0.45em]">
             {enriched.levelTags.join(' • ')}
           </span>
-          <h3 className="font-serif text-lg font-semibold leading-snug sm:text-xl line-clamp-2 drop-shadow-lg">
+          <h3 className="font-serif text-base sm:text-lg font-semibold leading-snug sm:leading-snug line-clamp-2 drop-shadow-lg">
             {enriched.name}
           </h3>
-          <p className="text-[10px] uppercase tracking-[0.35em] text-white/75">
+          <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.35em] text-white/75">
             {enriched.countries.length ? enriched.countries.join(' • ') : 'Global'}
           </p>
         </div>
       </div>
-      <div className="flex flex-1 flex-col gap-4 p-4 text-sm text-luxe-ash dark:text-luxe-ash/80">
-        <p className="line-clamp-3 text-[0.9rem] leading-relaxed text-luxe-ebony/85 dark:text-luxe-ivory/85">
+      <div className="flex flex-1 flex-col gap-2.5 sm:gap-4 p-3 sm:p-4 text-sm text-luxe-ash dark:text-luxe-ash/80">
+        <p className="line-clamp-3 text-[0.85rem] sm:text-[0.9rem] leading-relaxed text-luxe-ebony/85 dark:text-luxe-ivory/85">
           {enriched.shortDescription ?? enriched.sheetSummary ?? buildScholarshipExcerpt(enriched)}
         </p>
-        <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/70">
-          {enriched.fundingType && (
-            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
-              {enriched.fundingType}
-            </span>
-          )}
-          {enriched.coverage.slice(0, 3).map((item) => (
-            <span key={item} className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.35em] text-luxe-ash dark:text-luxe-ash/70">
+          {/* Show only coverage items, funding type is already shown as badge */}
+          {enriched.coverage.slice(0, 2).map((item) => (
+            <span key={item} className="rounded-full border border-black/10 bg-white/70 px-2 py-0.5 sm:px-3 sm:py-1 dark:border-white/10 dark:bg-white/5">
               {item}
             </span>
           ))}
           {enriched.coverage.length === 0 && (
-            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 dark:border-white/10 dark:bg-white/5">
-              Comprehensive Support
+            <span className="rounded-full border border-black/10 bg-white/70 px-2 py-0.5 sm:px-3 sm:py-1 dark:border-white/10 dark:bg-white/5">
+              Support
             </span>
           )}
         </div>
