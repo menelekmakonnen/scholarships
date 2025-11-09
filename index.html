@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scholarships</title>
+<link rel="icon" href="favicon_active.png" type="image/png">
+<script>
+document.addEventListener('visibilitychange', () => {
+  const link = document.querySelector("link[rel~='icon']");
+  if (!link) return;
+  link.href = document.visibilityState === 'visible' ? 'favicon_active.png' : 'favicon_inactive.png';
+});
+</script>
+</head>
+<body>
+<h1>Scholarships</h1>
+<p>Welcome to the scholarships subdomain.</p>
+</body>
+</html>
