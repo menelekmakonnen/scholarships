@@ -7,7 +7,9 @@ import { IconXMark } from './icons';
 export interface FilterState {
   levels: Set<string>;
   countries: Set<string>;
-  coverage: Set<string>;
+  fundingTypes: Set<string>;
+  modalities: Set<string>;
+  eligibilities: Set<string>;
   showExpired: boolean;
 }
 
@@ -18,7 +20,9 @@ interface FilterPanelProps {
   onUpdate: (updater: (prev: FilterState) => FilterState) => void;
   levelOptions: string[];
   countryOptions: string[];
-  coverageOptions: string[];
+  fundingTypeOptions: string[];
+  modalityOptions: string[];
+  eligibilityOptions: string[];
 }
 
 function ToggleChip({
@@ -52,7 +56,9 @@ export function FilterPanel({
   onUpdate,
   levelOptions,
   countryOptions,
-  coverageOptions
+  fundingTypeOptions,
+  modalityOptions,
+  eligibilityOptions
 }: FilterPanelProps) {
   const toggleValue = (key: keyof FilterState, value: string) => {
     onUpdate((prev) => {
@@ -143,14 +149,40 @@ export function FilterPanel({
                 </div>
               </section>
               <section>
-                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Coverage</h3>
+                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Type of Funding</h3>
                 <div className="flex flex-wrap gap-2">
-                  {coverageOptions.map((item) => (
+                  {fundingTypeOptions.map((item) => (
                     <ToggleChip
                       key={item}
                       label={item}
-                      active={state.coverage.has(item)}
-                      onToggle={() => toggleValue('coverage', item)}
+                      active={state.fundingTypes.has(item)}
+                      onToggle={() => toggleValue('fundingTypes', item)}
+                    />
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">On-Campus or Remote</h3>
+                <div className="flex flex-wrap gap-2">
+                  {modalityOptions.map((item) => (
+                    <ToggleChip
+                      key={item}
+                      label={item}
+                      active={state.modalities.has(item)}
+                      onToggle={() => toggleValue('modalities', item)}
+                    />
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3 className="mb-4 text-xs uppercase tracking-[0.4em] text-luxe-ash dark:text-luxe-ash/70">Eligibility Criteria</h3>
+                <div className="flex max-h-64 flex-wrap gap-2 overflow-y-auto pr-1">
+                  {eligibilityOptions.map((item) => (
+                    <ToggleChip
+                      key={item}
+                      label={item}
+                      active={state.eligibilities.has(item)}
+                      onToggle={() => toggleValue('eligibilities', item)}
                     />
                   ))}
                 </div>

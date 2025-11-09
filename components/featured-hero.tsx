@@ -9,9 +9,10 @@ import { buildScholarshipExcerpt, buildScholarshipImageAlt } from '@/lib/present
 
 interface FeaturedHeroProps {
   scholarships: ScholarshipPreview[];
+  onSelect?: (scholarship: ScholarshipPreview) => void;
 }
 
-export function FeaturedHero({ scholarships }: FeaturedHeroProps) {
+export function FeaturedHero({ scholarships, onSelect }: FeaturedHeroProps) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -29,9 +30,9 @@ export function FeaturedHero({ scholarships }: FeaturedHeroProps) {
   };
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/80 p-10 shadow-aurora transition dark:border-white/10 dark:bg-white/5">
+    <section className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/80 p-10 shadow-aurora transition dark:border-white/10 dark:bg-white/5 h-[600px] lg:h-[500px]">
       <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-luxe-gold/20 opacity-60 dark:from-white/5 dark:via-transparent dark:to-luxe-gold/10" aria-hidden="true" />
-      <div className="relative grid gap-10 lg:grid-cols-[1.35fr_1fr]">
+      <div className="relative grid gap-10 h-full lg:grid-cols-[1.35fr_1fr]">
         <motion.div
           key={active.id}
           initial={{ opacity: 0, y: 28 }}
@@ -73,13 +74,19 @@ export function FeaturedHero({ scholarships }: FeaturedHeroProps) {
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => onSelect?.(active)}
+              className="rounded-full border border-luxe-gold/60 bg-gradient-to-r from-luxe-gold/30 to-luxe-gold/10 px-8 py-3 text-sm font-semibold uppercase tracking-[0.35em] text-luxe-ebony transition hover:border-luxe-gold/80 hover:from-luxe-gold/40 hover:shadow-lg dark:text-luxe-ivory"
+            >
+              View Details
+            </button>
             <Link
               href={active.link}
               target="_blank"
               rel="noreferrer"
               className="rounded-full border border-luxe-gold/40 bg-gradient-to-r from-luxe-gold/20 to-transparent px-8 py-3 text-sm font-semibold uppercase tracking-[0.35em] text-luxe-ebony transition hover:border-luxe-gold/70 hover:from-luxe-gold/30 hover:text-luxe-gold dark:text-luxe-ivory"
             >
-              Visit Scholarship Site
+              Visit Site
             </Link>
             <div className="flex items-center gap-2">
               {scholarships.map((item, itemIndex) => (
@@ -98,7 +105,10 @@ export function FeaturedHero({ scholarships }: FeaturedHeroProps) {
             </div>
           </div>
         </motion.div>
-        <div className="relative min-h-[280px] overflow-hidden rounded-3xl border border-black/10 bg-black/5 shadow-inner dark:border-white/10 dark:bg-black/60">
+        <button
+          onClick={() => onSelect?.(active)}
+          className="relative overflow-hidden rounded-3xl border border-black/10 bg-black/5 shadow-inner dark:border-white/10 dark:bg-black/60 cursor-pointer transition hover:border-luxe-gold/40 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-luxe-gold/50 h-full"
+        >
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={active.previewImage ?? active.id}
@@ -125,7 +135,12 @@ export function FeaturedHero({ scholarships }: FeaturedHeroProps) {
             </motion.div>
           </AnimatePresence>
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
-        </div>
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity hover:opacity-100 bg-black/30 backdrop-blur-sm">
+            <span className="rounded-full border border-white/60 bg-white/90 px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-luxe-ebony shadow-lg">
+              View Details
+            </span>
+          </div>
+        </button>
       </div>
     </section>
   );

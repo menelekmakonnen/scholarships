@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { getScholarships } from '@/lib/sheets';
-import { FeaturedHero } from '@/components/featured-hero';
-import { ScholarshipGrid } from '@/components/scholarship-grid';
-import { ScholarshipHighlights } from '@/components/scholarship-highlights';
+import { PageClient } from './page-client';
 import type { ScholarshipPreview } from '@/lib/types';
 import { enrichScholarshipPreview } from '@/lib/metadata';
 
@@ -30,10 +28,8 @@ export default async function Page() {
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-16 px-5 py-12 sm:px-8 lg:px-10">
-      <FeaturedHero scholarships={featured} />
-      <ScholarshipHighlights scholarships={hydratedScholarships} />
       <Suspense fallback={<div className="text-luxe-ash">Loading scholarships…</div>}>
-        <ScholarshipGrid scholarships={hydratedScholarships} />
+        <PageClient featured={featured} scholarships={hydratedScholarships} />
       </Suspense>
     </main>
   );

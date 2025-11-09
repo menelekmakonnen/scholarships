@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 interface ScholarshipHighlightsProps {
   scholarships: ScholarshipPreview[];
+  onFilterClick?: (filterType: 'active' | 'countries' | 'deadline') => void;
 }
 
 function getUpcomingDeadline(scholarships: ScholarshipPreview[]) {
@@ -30,8 +31,16 @@ function getUpcomingDeadline(scholarships: ScholarshipPreview[]) {
   };
 }
 
-export function ScholarshipHighlights({ scholarships }: ScholarshipHighlightsProps) {
+export function ScholarshipHighlights({ scholarships, onFilterClick }: ScholarshipHighlightsProps) {
   const [activeModal, setActiveModal] = useState<string | null>(null);
+
+  const handlePanelClick = (id: string) => {
+    if (onFilterClick) {
+      onFilterClick(id as 'active' | 'countries' | 'deadline');
+    } else {
+      setActiveModal(id);
+    }
+  };
 
   const totalActive = scholarships.filter((entry) => !entry.isExpired).length;
   const uniqueCountries = new Set(
@@ -132,7 +141,7 @@ export function ScholarshipHighlights({ scholarships }: ScholarshipHighlightsPro
         {metrics.map(({ id, title, value, description, icon: Icon, accent }) => (
           <button
             key={title}
-            onClick={() => setActiveModal(id)}
+            onClick={() => handlePanelClick(id)}
             className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/90 p-6 shadow-[0_24px_70px_-40px_rgba(20,25,35,0.55)] transition hover:-translate-y-1 hover:shadow-[0_32px_90px_-42px_rgba(212,175,55,0.55)] dark:border-white/10 dark:bg-white/10 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-luxe-gold/50"
           >
             <div className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-70`} aria-hidden />
@@ -145,13 +154,15 @@ export function ScholarshipHighlights({ scholarships }: ScholarshipHighlightsPro
               </div>
               <p className="font-serif text-3xl text-luxe-ebony dark:text-luxe-ivory">{value}</p>
               <p className="max-w-sm text-sm leading-relaxed text-luxe-ash dark:text-luxe-ash/80">{description}</p>
-              <p className="text-xs uppercase tracking-[0.3em] text-luxe-gold/70 dark:text-luxe-gold/60">Click to learn more →</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-luxe-gold/70 dark:text-luxe-gold/60">
+                {onFilterClick ? 'Click to filter →' : 'Click to learn more →'}
+              </p>
             </div>
           </button>
         ))}
       </section>
 
-      {activeModal && (
+      {!onFilterClick && activeModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
           onClick={() => setActiveModal(null)}
