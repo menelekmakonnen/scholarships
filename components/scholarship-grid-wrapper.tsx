@@ -6,6 +6,7 @@ import { ScholarshipModal } from './scholarship-modal';
 import type { FilterState } from './filter-panel';
 import type { ScholarshipPreview } from '@/lib/types';
 import { determineFundingCategory } from '@/lib/funding-utils';
+import type { SortOption, SortDirection } from './ssf-bar';
 
 interface ScholarshipGridWrapperProps {
   scholarships: ScholarshipPreview[];
@@ -13,8 +14,8 @@ interface ScholarshipGridWrapperProps {
   description?: string;
   filters: FilterState;
   search: string;
-  sort: string;
-  sortDirection: string;
+  sort: SortOption;
+  sortDirection: SortDirection;
 }
 
 function compareDates(a: string | null, b: string | null) {

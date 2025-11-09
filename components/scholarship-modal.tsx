@@ -225,30 +225,30 @@ export function ScholarshipModal({ open, onClose, scholarship, allScholarships =
                 {hasPreviousScholarship && (
                   <motion.button
                     onClick={navigateToPreviousScholarship}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 z-20 rounded-full border border-luxe-gold/40 bg-white/90 p-3 text-luxe-ebony transition hover:border-luxe-gold/70 hover:bg-luxe-gold/20 hover:text-luxe-gold focus:outline-none focus:ring-2 focus:ring-luxe-gold/30 dark:border-luxe-gold/30 dark:bg-black/80 dark:text-luxe-ivory"
+                    className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-20 rounded-full border border-luxe-gold/40 bg-white/90 p-1.5 sm:p-3 text-luxe-ebony transition hover:border-luxe-gold/70 hover:bg-luxe-gold/20 hover:text-luxe-gold focus:outline-none focus:ring-2 focus:ring-luxe-gold/30 dark:border-luxe-gold/30 dark:bg-black/80 dark:text-luxe-ivory"
                     initial={{ scale: 0.85, opacity: 0, x: -20 }}
                     animate={{ scale: 1, opacity: 1, x: 0 }}
                     whileHover={{ scale: 1.1 }}
                     aria-label="Previous scholarship"
                   >
-                    <IconArrowLeft className="h-6 w-6" />
+                    <IconArrowLeft className="h-4 w-4 sm:h-6 sm:w-6" />
                   </motion.button>
                 )}
                 {hasNextScholarship && (
                   <motion.button
                     onClick={navigateToNextScholarship}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 z-20 rounded-full border border-luxe-gold/40 bg-white/90 p-3 text-luxe-ebony transition hover:border-luxe-gold/70 hover:bg-luxe-gold/20 hover:text-luxe-gold focus:outline-none focus:ring-2 focus:ring-luxe-gold/30 dark:border-luxe-gold/30 dark:bg-black/80 dark:text-luxe-ivory"
+                    className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-20 rounded-full border border-luxe-gold/40 bg-white/90 p-1.5 sm:p-3 text-luxe-ebony transition hover:border-luxe-gold/70 hover:bg-luxe-gold/20 hover:text-luxe-gold focus:outline-none focus:ring-2 focus:ring-luxe-gold/30 dark:border-luxe-gold/30 dark:bg-black/80 dark:text-luxe-ivory"
                     initial={{ scale: 0.85, opacity: 0, x: 20 }}
                     animate={{ scale: 1, opacity: 1, x: 0 }}
                     whileHover={{ scale: 1.1 }}
                     aria-label="Next scholarship"
                   >
-                    <IconArrowRight className="h-6 w-6" />
+                    <IconArrowRight className="h-4 w-4 sm:h-6 sm:w-6" />
                   </motion.button>
                 )}
               </>
             )}
-            <div className="flex max-h-full flex-col sm:grid sm:grid-cols-[1.1fr_1fr] sm:overflow-hidden">
+            <div className="flex h-full flex-col sm:grid sm:grid-cols-[1.1fr_1fr]">
               <div className="relative h-[320px] flex-shrink-0 overflow-hidden border-b border-black/10 bg-black/70 sm:h-full sm:border-b-0 sm:border-r dark:border-white/10 dark:bg-black/70">
                 {images.length > 0 ? (
                   <div className="relative h-full w-full">
@@ -294,7 +294,7 @@ export function ScholarshipModal({ open, onClose, scholarship, allScholarships =
                   </div>
                 )}
               </div>
-              <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-8 sm:px-8 sm:h-full">
+              <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-8 sm:px-8 min-h-0">
                 <div className="space-y-4">
                   <h2 className="font-serif text-3xl font-semibold leading-tight text-luxe-ebony dark:text-luxe-ivory">
                     {detail.name}

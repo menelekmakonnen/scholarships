@@ -84,7 +84,13 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
   };
 
   const handleSortChange = (newSort: SortOption, newDirection: SortDirection) => {
-    setSortState({ sort: newSort, direction: newDirection });
+    setSortState((prev) => {
+      // Only update if actually different to avoid unnecessary re-renders
+      if (prev.sort === newSort && prev.direction === newDirection) {
+        return prev;
+      }
+      return { sort: newSort, direction: newDirection };
+    });
   };
 
   const hasActiveFilters = useMemo(() => {

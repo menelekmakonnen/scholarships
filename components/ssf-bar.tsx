@@ -54,13 +54,16 @@ export function SSFBar({
     return () => window.removeEventListener('scroll', handleScroll);
   }, [heroRef]);
 
-  const handleSortChange = (newSort: SortOption) => {
-    if (newSort === sort) {
-      // Same sort option clicked, toggle direction
-      onSortChange(newSort, sortDirection === 'asc' ? 'desc' : 'asc');
+  const handleSortClick = (clickedSort: SortOption) => {
+    // Always call with the clicked sort option and current direction
+    // Parent will decide whether to toggle direction or reset
+    if (clickedSort === sort) {
+      // Same sort option, toggle direction
+      const newDirection: SortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+      onSortChange(clickedSort, newDirection);
     } else {
-      // New sort option, reset to asc
-      onSortChange(newSort, 'asc');
+      // Different sort option, start with asc
+      onSortChange(clickedSort, 'asc');
     }
   };
 
@@ -91,8 +94,9 @@ export function SSFBar({
           <div className="flex items-center gap-2">
             {SORT_OPTIONS.map((option) => (
               <button
+                type="button"
                 key={option.value}
-                onClick={() => handleSortChange(option.value)}
+                onClick={() => handleSortClick(option.value)}
                 className={clsx(
                   'rounded-full border px-4 py-2.5 text-xs uppercase tracking-[0.3em] transition',
                   sort === option.value
