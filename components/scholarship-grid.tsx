@@ -15,7 +15,9 @@ interface ScholarshipGridProps {
   initialFilters?: Partial<{
     levels: string[];
     countries: string[];
-    coverage: string[];
+    fundingTypes: string[];
+    modalities: string[];
+    eligibilities: string[];
     showExpired: boolean;
   }>;
   initialSort?: SortOption;
@@ -54,7 +56,9 @@ export function ScholarshipGrid({
     return {
       levels: new Set(base.levels ?? []),
       countries: new Set(base.countries ?? []),
-      coverage: new Set(base.coverage ?? []),
+      fundingTypes: new Set(base.fundingTypes ?? []),
+      modalities: new Set(base.modalities ?? []),
+      eligibilities: new Set(base.eligibilities ?? []),
       showExpired: base.showExpired ?? false
     };
   }, [initialFilters]);
@@ -87,10 +91,24 @@ export function ScholarshipGrid({
     return Array.from(countries).sort();
   }, [scholarships]);
 
-  const coverageOptions = useMemo(() => {
-    const coverage = new Set<string>();
-    scholarships.forEach((scholarship) => scholarship.coverage.forEach((item) => coverage.add(item)));
-    return Array.from(coverage).sort();
+  const fundingTypeOptions = useMemo(() => {
+    const types = new Set<string>();
+    scholarships.forEach((scholarship) => {
+      if (scholarship.fundingType) types.add(scholarship.fundingType);
+    });
+    return Array.from(types).sort();
+  }, [scholarships]);
+
+  const modalityOptions = useMemo(() => {
+    const modalities = new Set<string>();
+    scholarships.forEach((scholarship) => scholarship.deliveryModes.forEach((mode) => modalities.add(mode)));
+    return Array.from(modalities).sort();
+  }, [scholarships]);
+
+  const eligibilityOptions = useMemo(() => {
+    const criteria = new Set<string>();
+    scholarships.forEach((scholarship) => scholarship.eligibility.forEach((item) => criteria.add(item)));
+    return Array.from(criteria).sort();
   }, [scholarships]);
 
   const visibleScholarships = useMemo(() => {
@@ -107,8 +125,16 @@ export function ScholarshipGrid({
         const match = scholarship.countries.some((country) => filters.countries.has(country));
         if (!match) return false;
       }
-      if (filters.coverage.size > 0) {
-        const match = scholarship.coverage.some((item) => filters.coverage.has(item));
+      if (filters.fundingTypes.size > 0) {
+        const match = scholarship.fundingType && filters.fundingTypes.has(scholarship.fundingType);
+        if (!match) return false;
+      }
+      if (filters.modalities.size > 0) {
+        const match = scholarship.deliveryModes.some((mode) => filters.modalities.has(mode));
+        if (!match) return false;
+      }
+      if (filters.eligibilities.size > 0) {
+        const match = scholarship.eligibility.some((item) => filters.eligibilities.has(item));
         if (!match) return false;
       }
       if (query) {
@@ -215,13 +241,15 @@ export function ScholarshipGrid({
               setFilters({
                 levels: new Set(),
                 countries: new Set(),
-                coverage: new Set(),
+                fundingTypes: new Set(),
+                modalities: new Set(),
+                eligibilities: new Set(),
                 showExpired: filters.showExpired
               })
             }
             className="rounded-full border border-luxe-gold/40 bg-gradient-to-r from-luxe-gold/20 to-transparent px-6 py-2 text-xs uppercase tracking-[0.3em] text-luxe-ebony transition hover:border-luxe-gold/70 hover:text-luxe-gold dark:text-luxe-ivory"
           >
-            Clear Level, Country & Coverage
+            Clear All Filters
           </button>
         </div>
       )}
@@ -234,21 +262,27 @@ export function ScholarshipGrid({
             const base: FilterState = {
               levels: new Set(prev.levels),
               countries: new Set(prev.countries),
-              coverage: new Set(prev.coverage),
+              fundingTypes: new Set(prev.fundingTypes),
+              modalities: new Set(prev.modalities),
+              eligibilities: new Set(prev.eligibilities),
               showExpired: prev.showExpired
             };
             const next = updater(base);
             return {
               levels: new Set(next.levels),
               countries: new Set(next.countries),
-              coverage: new Set(next.coverage),
+              fundingTypes: new Set(next.fundingTypes),
+              modalities: new Set(next.modalities),
+              eligibilities: new Set(next.eligibilities),
               showExpired: next.showExpired
             };
           })
         }
         levelOptions={levelOptions}
         countryOptions={countryOptions}
-        coverageOptions={coverageOptions}
+        fundingTypeOptions={fundingTypeOptions}
+        modalityOptions={modalityOptions}
+        eligibilityOptions={eligibilityOptions}
       />
       <ScholarshipModal open={Boolean(selected)} onClose={() => setSelected(null)} scholarship={selected} />
     </div>
