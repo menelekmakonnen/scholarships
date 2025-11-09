@@ -10,16 +10,14 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-function resolveCoverageLabel(
+function resolveFundingTypeLabel(
   scholarships: Awaited<ReturnType<typeof loadScholarships>>,
   slug: string
 ): string | null {
   const target = slugify(decodeURIComponent(slug));
   for (const entry of scholarships) {
-    for (const coverage of entry.coverage) {
-      if (slugify(coverage) === target) {
-        return coverage;
-      }
+    if (entry.fundingType && slugify(entry.fundingType) === target) {
+      return entry.fundingType;
     }
   }
   return null;
@@ -31,34 +29,34 @@ interface FundingPageProps {
 
 export async function generateMetadata({ params }: FundingPageProps): Promise<Metadata> {
   const scholarships = await loadScholarships();
-  const label = resolveCoverageLabel(scholarships, params.funding);
+  const label = resolveFundingTypeLabel(scholarships, params.funding);
   if (!label) {
-    return { title: 'Scholarships by Funding Type', description: 'Review scholarships grouped by coverage and funding benefits.' };
+    return { title: 'Scholarships by Funding Type', description: 'Review scholarships grouped by type of funding.' };
   }
   return {
     title: `${label} Scholarships | ICUNi`,
-    description: `Browse scholarships that include ${label.toLowerCase()} so you can assess the generosity of each award at a glance.`
+    description: `Browse ${label.toLowerCase()} scholarships to find opportunities that match your funding needs.`
   };
 }
 
 export default async function FundingPage({ params }: FundingPageProps) {
   const scholarships = await loadScholarships();
-  const label = resolveCoverageLabel(scholarships, params.funding);
+  const label = resolveFundingTypeLabel(scholarships, params.funding);
   if (!label) {
     notFound();
   }
-  const matching = scholarships.filter((entry) => entry.coverage.some((item) => item === label));
+  const matching = scholarships.filter((entry) => entry.fundingType === label);
   const description = matching.length
-    ? `${matching.length.toLocaleString()} scholarships offer ${label.toLowerCase()}. Dial in additional filters to craft your personalised shortlist.`
-    : `No scholarships currently list ${label.toLowerCase()} as a benefit. Clear filters to keep exploring.`;
+    ? `${matching.length.toLocaleString()} scholarships are classified as ${label.toLowerCase()}. Dial in additional filters to craft your personalised shortlist.`
+    : `No scholarships currently classified as ${label.toLowerCase()}. Clear filters to keep exploring.`;
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-16 px-5 py-12 sm:px-8 lg:px-10">
       <ScholarshipGrid
         scholarships={scholarships}
-        heading={`${label} Coverage Scholarships`}
+        heading={`${label} Scholarships`}
         description={description}
-        initialFilters={{ coverage: [label] }}
+        initialFilters={{ fundingTypes: [label] }}
       />
     </main>
   );
