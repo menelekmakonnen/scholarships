@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import { IconArrowLeft, IconArrowRight, IconLink, IconXMark } from './icons';
 import type { ScholarshipDetail, ScholarshipPreview } from '@/lib/types';
 import { buildScholarshipExcerpt, buildScholarshipImageAlt } from '@/lib/presenters';
+import { fetchScholarshipDetail } from '@/lib/api';
 import { formatDistanceStrict } from 'date-fns';
 
 interface ScholarshipModalProps {
@@ -13,13 +14,6 @@ interface ScholarshipModalProps {
   onClose: () => void;
   scholarship: ScholarshipPreview | null;
 }
-
-const fetcher = (url: string) => fetch(url).then((res) => {
-  if (!res.ok) {
-    throw new Error('Failed to fetch scholarship');
-  }
-  return res.json();
-});
 
 function useCountdown(targetDate: string | null) {
   const [now, setNow] = useState(() => Date.now());
@@ -49,7 +43,7 @@ function useCountdown(targetDate: string | null) {
 export function ScholarshipModal({ open, onClose, scholarship }: ScholarshipModalProps) {
   const { data, isLoading } = useSWR<ScholarshipDetail>(
     () => (scholarship ? `/api/scholarships/${scholarship.id}` : null),
-    fetcher,
+    (url) => fetchScholarshipDetail<ScholarshipDetail>(url),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false
