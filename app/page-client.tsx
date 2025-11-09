@@ -8,6 +8,7 @@ import { ScholarshipModal } from '@/components/scholarship-modal';
 import { SSFBar, type SortOption, type SortDirection } from '@/components/ssf-bar';
 import { FilterPanel, type FilterState } from '@/components/filter-panel';
 import type { ScholarshipPreview } from '@/lib/types';
+import { determineFundingCategory } from '@/lib/funding-utils';
 
 interface PageClientProps {
   featured: ScholarshipPreview[];
@@ -41,7 +42,8 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
         if (!scholarship.countries.some((country) => filters.countries.has(country))) return false;
       }
       if (filters.fundingTypes.size > 0) {
-        if (!scholarship.fundingType || !filters.fundingTypes.has(scholarship.fundingType)) return false;
+        const category = determineFundingCategory(scholarship.fundingType, scholarship.coverage);
+        if (!category || !filters.fundingTypes.has(category)) return false;
       }
       if (filters.modalities.size > 0) {
         if (!scholarship.deliveryModes.some((mode) => filters.modalities.has(mode))) return false;
@@ -52,10 +54,6 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
       return true;
     });
   }, [scholarships, filters]);
-
-  const handleHighlightClick = (filterType: 'active' | 'countries' | 'deadline') => {
-    // Will be implemented to apply filters or show modal
-  };
 
   const handleCountryFilter = (country: string) => {
     setFilters((prev) => {
@@ -123,12 +121,9 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
   }, [scholarships]);
 
   const fundingTypeOptions = useMemo(() => {
-    const types = new Set<string>();
-    scholarships.forEach((scholarship) => {
-      if (scholarship.fundingType) types.add(scholarship.fundingType);
-    });
-    return Array.from(types).sort();
-  }, [scholarships]);
+    // Always return the 4 funding categories
+    return ['Full', 'Partial', 'Full (and more)', 'Partial (and more)'];
+  }, []);
 
   const modalityOptions = useMemo(() => {
     const modalities = new Set<string>();
@@ -162,7 +157,6 @@ export function PageClient({ featured, scholarships }: PageClientProps) {
 
       <ScholarshipHighlights
         scholarships={filteredScholarships}
-        onFilterClick={handleHighlightClick}
         onScholarshipSelect={setSelectedScholarship}
         onCountryFilter={handleCountryFilter}
         onFundingTypeFilter={handleFundingTypeFilter}

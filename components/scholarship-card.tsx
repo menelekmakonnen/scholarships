@@ -8,6 +8,7 @@ import type { ScholarshipDetail, ScholarshipPreview } from '@/lib/types';
 import { buildScholarshipExcerpt, buildScholarshipImageAlt } from '@/lib/presenters';
 import { fetchScholarshipDetail } from '@/lib/api';
 import { IconShield, IconAward } from './icons';
+import { determineFundingCategory } from '@/lib/funding-utils';
 
 interface ScholarshipCardProps {
   scholarship: ScholarshipPreview;
@@ -43,6 +44,8 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
   );
 
   const enriched = (data ?? scholarship) as ScholarshipPreview;
+  const fundingCategory = determineFundingCategory(enriched.fundingType, enriched.coverage);
+  const isFullFunding = fundingCategory?.includes('Full') ?? false;
 
   const handleClick = () => {
     onSelect(enriched);
@@ -62,11 +65,11 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
         {enriched.previewImage ? (
           <>
             <div className={`absolute inset-0 flex items-center justify-center ${
-              enriched.fundingType?.toLowerCase().includes('full')
+              isFullFunding
                 ? 'bg-gradient-to-br from-luxe-gold/40 via-luxe-ivory/40 to-luxe-emerald/30'
                 : 'bg-gradient-to-br from-luxe-azure/30 via-luxe-ivory/40 to-luxe-gold/20'
             }`}>
-              {enriched.fundingType?.toLowerCase().includes('full') ? (
+              {isFullFunding ? (
                 <IconAward className="h-32 w-32 text-luxe-gold/40 transition-all duration-1000 group-hover:scale-110 group-hover:text-luxe-gold/50" />
               ) : (
                 <IconShield className="h-32 w-32 text-luxe-azure/40 transition-all duration-1000 group-hover:scale-110 group-hover:text-luxe-azure/50" />
@@ -82,12 +85,12 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
           </>
         ) : (
           <div className={`absolute inset-0 ${
-            enriched.fundingType?.toLowerCase().includes('full')
+            isFullFunding
               ? 'bg-gradient-to-br from-luxe-gold/40 via-luxe-ivory/40 to-luxe-emerald/30'
               : 'bg-gradient-to-br from-luxe-azure/30 via-luxe-ivory/40 to-luxe-gold/20'
           }`}>
             <div className="absolute inset-0 flex items-center justify-center">
-              {enriched.fundingType?.toLowerCase().includes('full') ? (
+              {isFullFunding ? (
                 <IconAward className="h-32 w-32 text-luxe-gold/60 transition-all duration-700 group-hover:scale-110 group-hover:text-luxe-gold/80" />
               ) : (
                 <IconShield className="h-32 w-32 text-luxe-azure/50 transition-all duration-700 group-hover:scale-110 group-hover:text-luxe-azure/70" />
@@ -97,13 +100,13 @@ export function ScholarshipCard({ scholarship, onSelect }: ScholarshipCardProps)
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
         {/* Funding Type Badge */}
-        {enriched.fundingType && (
+        {fundingCategory && (
           <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 rounded-full px-2 py-1 sm:px-3 sm:py-1.5 text-[9px] sm:text-xs font-semibold uppercase tracking-wider ${
-            enriched.fundingType.toLowerCase().includes('full')
+            isFullFunding
               ? 'bg-luxe-gold/90 text-white border border-luxe-gold/30 shadow-lg'
               : 'bg-luxe-azure/90 text-white border border-luxe-azure/30 shadow-lg'
           }`}>
-            {enriched.fundingType}
+            {fundingCategory}
           </div>
         )}
         <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 space-y-1.5 sm:space-y-2 text-sm text-white">

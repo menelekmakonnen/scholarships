@@ -37,7 +37,6 @@ export function SSFBar({
   onClearFilters
 }: SSFBarProps) {
   const [isSticky, setIsSticky] = useState(false);
-  const [lastSort, setLastSort] = useState<SortOption>(sort);
 
   // Smart SSF bar positioning
   useEffect(() => {
@@ -55,17 +54,6 @@ export function SSFBar({
     return () => window.removeEventListener('scroll', handleScroll);
   }, [heroRef]);
 
-  const handleSortClick = () => {
-    if (lastSort === sort) {
-      // Toggle direction
-      onSortChange(sort, sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      // New sort option, use asc
-      setLastSort(sort);
-      onSortChange(sort, 'asc');
-    }
-  };
-
   const handleSortChange = (newSort: SortOption) => {
     if (newSort === sort) {
       // Same sort option clicked, toggle direction
@@ -74,7 +62,6 @@ export function SSFBar({
       // New sort option, reset to asc
       onSortChange(newSort, 'asc');
     }
-    setLastSort(newSort);
   };
 
   return (
